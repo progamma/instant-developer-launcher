@@ -64,7 +64,7 @@
     <preference name="FadeSplashScreen" value="false" />
     <preference name="FadeSplashScreenDuration" value="500" />
     <preference name="Orientation" value="default" />
-    <preference name="android-targetSdkVersion" value="34" />
+    <preference name="android-targetSdkVersion" value="35" />
     <preference name="android-minSdkVersion" value="22" />
     <preference name="Suppresses3DTouchGesture" value="true" />
     <preference name="AllowInlineMediaPlayback" value="true" />
@@ -257,7 +257,7 @@
     <plugin name="cordova-plugin-device-motion" spec="^2.0.1" />
     <plugin name="cordova-plugin-device" spec="^2.1.0" />
     <plugin name="com.unarin.cordova.beacon" spec="^3.8.1" />
-    <plugin name="cordova-plugin-camera" spec="^7.0.0">
+    <plugin name="cordova-plugin-camera" spec="^8.0.0">
         <variable name="CAMERA_USAGE_DESCRIPTION" value="This app needs to access your camera" />
         <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value="This app needs to access your photo library" />
     </plugin>

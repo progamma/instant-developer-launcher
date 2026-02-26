@@ -195,49 +195,61 @@ module.exports = function (context) {
       }
     }
     //
-    // Fix cordova-plugin-push iOS
-    let pushPlugin = rootdir + "/plugins/@havesource/cordova-plugin-push/src/ios/AppDelegate+notification.m";
-    if (fs.existsSync(pushPlugin)) {
-      let pushPluginOldContent = fs.readFileSync(pushPlugin).toString("utf-8");
-      let pushPluginNewContent = "";
-      //
-      if (pushPluginOldContent.indexOf("// Fix isInline") === -1) {
-        // Push notifications have always to be delivered to app, not just in case app is not active
-        pushPluginOldContent = pushPluginOldContent.replace("application.applicationState != UIApplicationStateActive", "application.applicationState != UIApplicationStateActive || true");
-        //
-        // The "notification click" event has to be notified immediately if notification is silent (in case of background) or if app is in foreground
-        pushPluginOldContent = pushPluginOldContent.replace("silent == 1", "silent == 1 || application.applicationState == UIApplicationStateActive");
-        //
-        // Calculate isInline property in order to let app know if state was foreground or background when notification arrived
-        let lines = pushPluginOldContent.split("\n");
-        for (i = 0; i < lines.length; i++) {
-          if (i === 122) {
-            lines[i] = "\n            // Fix isInline\n";
-            lines[i] += "            if (application.applicationState == UIApplicationStateActive)\n";
-            lines[i] += "              pushHandler.isInline = YES;\n";
-            lines[i] += "            else\n";
-            lines[i] += "              pushHandler.isInline = NO;";
-          }
-          //
-          pushPluginNewContent += lines[i] + "\n";
-        }
-        //
-        fs.writeFileSync(pushPlugin, pushPluginNewContent);
-      }
-    }
-    //
     // Fix cordova-plugin-push (https://github.com/progamma/IndeRT/issues/6991 and https://github.com/progamma/IndeRT/issues/6981)
+    let searchValue = "                    NSLog(@\"[PushPlugin] Error during authorization request: %@\", error.localizedDescription);";
+    let newValue = "";
+    newValue += "                    NSLog(@\"[PushPlugin] Error during authorization request: %@\", error.localizedDescription);\n"
+    newValue += "                    dispatch_async(dispatch_get_main_queue(), ^{\n";
+    newValue += "                        [[UIApplication sharedApplication] registerForRemoteNotifications];\n";
+    newValue += "                    });";
+    //
     platformsManager.replaceTextInFile({
-      searchValue: "case UNAuthorizationStatusDenied:",
-      newValue: "case UNAuthorizationStatusDenied:\n                [self performSelectorOnMainThread:@selector(registerForRemoteNotifications) withObject:nil waitUntilDone:NO];",
+      searchValue,
+      newValue,
       filePath: "/plugins/@havesource/cordova-plugin-push/src/ios/PushPlugin.m",
-      skipCondition: {type: "includes", text: "case UNAuthorizationStatusDenied:\n                [self"}
+      skipCondition: {type: "includes", text: "                    NSLog(@\"[PushPlugin] Error during authorization request: %@\", error.localizedDescription);\n                    dispatch_"}
     });
     //
+    searchValue = "                    NSLog(@\"[PushPlugin] Notification permissions denied.\");";
+    newValue = "";
+    newValue += "                    NSLog(@\"[PushPlugin] Notification permissions denied.\");\n";
+    newValue += "                    dispatch_async(dispatch_get_main_queue(), ^{\n";
+    newValue += "                        [[UIApplication sharedApplication] registerForRemoteNotifications];\n";
+    newValue += "                    });";
+    //
     platformsManager.replaceTextInFile({
-      searchValue: "default=\"~> 8.1.1\"",
-      newValue: "default=\"~> 10.24.0\"",
-      filePath: "/plugins/@havesource/cordova-plugin-push/plugin.xml"
+      searchValue,
+      newValue,
+      filePath: "/plugins/@havesource/cordova-plugin-push/src/ios/PushPlugin.m",
+      skipCondition: {type: "includes", text: "                    NSLog(@\"[PushPlugin] Notification permissions denied.\");\n                    dispatch_"}
+    });
+    //
+    searchValue = "                        NSLog(@\"[PushPlugin] User denied new notification permissions.\");";
+    newValue = "";
+    newValue += "                        NSLog(@\"[PushPlugin] User denied new notification permissions.\");\n";
+    newValue += "                        dispatch_async(dispatch_get_main_queue(), ^{\n";
+    newValue += "                            [[UIApplication sharedApplication] registerForRemoteNotifications];\n";
+    newValue += "                        });";
+    //
+    platformsManager.replaceTextInFile({
+      searchValue,
+      newValue,
+      filePath: "/plugins/@havesource/cordova-plugin-push/src/ios/PushPlugin.m",
+      skipCondition: {type: "includes", text: "                        NSLog(@\"[PushPlugin] User denied new notification permissions.\");\n                        dispatch_"}
+    });
+    //
+    searchValue = "                        NSLog(@\"[PushPlugin] Error during authorization request: %@\", error.localizedDescription);";
+    newValue = "";
+    newValue += "                        NSLog(@\"[PushPlugin] Error during authorization request: %@\", error.localizedDescription);\n";
+    newValue += "                        dispatch_async(dispatch_get_main_queue(), ^{\n";
+    newValue += "                            [[UIApplication sharedApplication] registerForRemoteNotifications];\n";
+    newValue += "                        });";
+    //
+    platformsManager.replaceTextInFile({
+      searchValue,
+      newValue,
+      filePath: "/plugins/@havesource/cordova-plugin-push/src/ios/PushPlugin.m",
+      skipCondition: {type: "includes", text: "                        NSLog(@\"[PushPlugin] Error during authorization request: %@\", error.localizedDescription);\n                        dispatch_"}
     });
     //
     // Fix cordova-plugin-oidc-basic

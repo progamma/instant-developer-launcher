@@ -36,7 +36,7 @@ html {
 body {
   margin: 0;
   overflow-x:hidden;
-  background-color: #39403A !important;
+  background-color: #3C3C3B !important;
 }
 
 /* HTML5 display definitions
@@ -415,7 +415,7 @@ html {
   margin: 0; }
 
 body {
-  background-color: #39403A;
+  background-color: #3C3C3B;
   text-align: left; }
 
 .wrapper {
@@ -431,7 +431,7 @@ body {
   left: 0;
   height: 100%;
   z-index: 100;
-  background-color: #39403A;
+  background-color: #3C3C3B;
   text-align: center;
   padding: 10px;
   overflow: hidden;
@@ -460,7 +460,7 @@ body {
   font-family: "Source Sans Pro", Helvetica, "Lucida Grande", Arial, sans-serif;
   font-size: 16px;
   font-weight: 400;
-  color: #39403A;
+  color: #3C3C3B;
   -webkit-font-smoothing: subpixel-antialiased; }
 
 .wrapper a {
@@ -473,7 +473,7 @@ body {
 .wrapper li {
   margin: 0;
   padding: 0;
-  color: #39403A; }
+  color: #3C3C3B; }
 
 .wrapper li {
   list-style: none; }
@@ -565,7 +565,7 @@ label.checkbox span {
   border-radius: 3px;
   background-color: rgba(0, 0, 0, 0.1) !important;
   outline: none;
-  color: #39403A;
+  color: #3C3C3B;
   font-size: 0.9em;
   vertical-align: middle;
   cursor: pointer;
@@ -688,7 +688,7 @@ button {
   color: rgba(255, 255, 255, 0.5) !important;
   border: none; }
 .btn-boxed.btn-selected, .btn-boxed.btn-primary {
-  background-color: #37B349;
+  background-color: #45A94B;
   border-color: transparent;
   -webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.3);
   -moz-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.3);
@@ -835,7 +835,7 @@ button {
     -moz-transform: translateY(0);
     -ms-transform: translateY(0);
     transform: translateY(0);
-    background: #39403A; }
+    background: #3C3C3B; }
   25% {
     height: 30px;
     -webkit-transform: translateY(15px);
@@ -849,7 +849,7 @@ button {
     -moz-transform: translateY(0);
     -ms-transform: translateY(0);
     transform: translateY(0);
-    background: #39403A; }
+    background: #3C3C3B; }
   100% {
     height: 5px;
     -webkit-transform: translateY(0);
@@ -928,7 +928,7 @@ button {
   -webkit-flex-direction: column;
   flex-direction: column; }
 .popup h1 {
-  color: #39403A; }
+  color: #3C3C3B; }
 
 .popup-content {
   overflow: auto;
@@ -948,7 +948,7 @@ button {
   padding-top: 1em; }
 
 .icon-popup-confirmation {
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M12.858%2021.69L5%2029.58l19.672%2019.75L55%2018.9%2047.136%2011%2024.672%2033.535%2012.858%2021.69z%22%20fill%3D%22%2337B349%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E"); }
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M12.858%2021.69L5%2029.58l19.672%2019.75L55%2018.9%2047.136%2011%2024.672%2033.535%2012.858%2021.69z%22%20fill%3D%22%2345A94B%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E"); }
 
 .icon-popup-mail {
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M14%2036h-4c-1.108%200-2%20.672-2%201.5s.896%201.5%202%201.5h4c1.108%200%202-.672%202-1.5s-.896-1.5-2-1.5zm0-8H6c-1.108%200-2%20.672-2%201.5S4.896%2031%206%2031h8c1.108%200%202-.672%202-1.5s-.896-1.5-2-1.5zm0-8H2c-1.104%200-2%20.67-2%201.5S.896%2023%202%2023h12c1.108%200%202-.672%202-1.5s-.896-1.5-2-1.5zm45.067-4.067c-.57-.573-1.373-.933-2.25-.933H23.183c-.876%200-1.68.36-2.25.933-.572.57-.932%201.373-.932%202.25v23.635c0%20.876.36%201.68.933%202.25.57.572%201.373.932%202.25.932h33.635c.876%200%201.68-.36%202.25-.933.572-.57.934-1.373.932-2.25V18.183c0-.876-.36-1.68-.933-2.25zM57%2040L46%2030l11-10v20zM23.33%2018h33.334c.122%200%20.23.048.317.138.01.01.013.02.02.03l-14.847%2014.15c-.463.442-1.11.682-1.77.682-.635%200-1.255-.223-1.712-.638L23%2018.155c.005-.005.007-.012.012-.017.087-.09.195-.138.317-.138zM23%2040V20l11%2010-11%2010zm0%202l12.473-11%201.948%201.718c.84.738%201.906%201.092%202.96%201.092%201.094%200%202.2-.38%203.05-1.166l1.74-1.615L57%2041.997c-.007-.003-.012.002-.02.002H23z%22%20fill%3D%22%23999%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E"); }
@@ -1200,7 +1200,7 @@ button {
 .searchfield {
   padding: 10px; }
 .searchfield input {
-  color: #39403A;
+  color: #3C3C3B;
   background-color: rgba(0, 0, 0, 0.1);
   background-position: right 5px top 50%;
   -webkit-transition: background-color 0.3s cubic-bezier(0.5, 0, 0.5, 1);
@@ -1253,7 +1253,7 @@ button {
   width: 100%;
   height: auto; }
 .appbox.console h1 {
-  color: #37B349;
+  color: #45A94B;
   font-weight: 600; }
 .appbox.console .appbox-data {
   display: none; }
@@ -1367,7 +1367,7 @@ button {
   border-left: 6px solid rgba(0, 0, 0, 0.1);
   border-right: 6px solid rgba(0, 0, 0, 0.1);
   border-bottom: 6px solid rgba(0, 0, 0, 0.1);
-  border-top: 6px solid #37B349;
+  border-top: 6px solid #45A94B;
   border-radius: 100%;
   -webkit-animation: rotation 0.6s infinite linear;
   -moz-animation: rotation 0.6s infinite linear;

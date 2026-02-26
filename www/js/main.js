@@ -60,10 +60,10 @@ Shell.translate = function ()
 Shell.initUserInterface = function ()
 {
   // Changes colors
-  if (Shell.config.theme.accentColor !== "#37B349")
-    setColor("rgb(55, 179, 73)", Shell.config.theme.accentColor);
-  if (Shell.config.theme.activeColor !== "#257831")
-    setColor("rgb(37, 120, 49)", Shell.config.theme.activeColor);
+  if (Shell.config.theme.accentColor !== "#45A94B")
+    setColor("rgb(69, 169, 75)", Shell.config.theme.accentColor);
+  if (Shell.config.theme.activeColor !== "#237131")
+    setColor("rgb(35, 113, 49)", Shell.config.theme.activeColor);
   //
   Shell.page = "main";
   //

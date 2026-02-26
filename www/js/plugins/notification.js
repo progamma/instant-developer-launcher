@@ -5,7 +5,7 @@
  */
 
 
-/* global cordova */
+/* global cordova, PushNotification, device */
 
 var Plugin = Plugin || {};
 
@@ -138,7 +138,7 @@ Plugin.Notification.register = function (req)
 {
   this.push = PushNotification.init({
     android: {
-      senderID: req.params.senderID || "643945480332",
+      senderID: req.params.senderID || "643945480332"
     },
     ios: {
       badge: true,
@@ -160,6 +160,25 @@ Plugin.Notification.register = function (req)
   });
   //
   this.push.on('notification', function (data) {
+    if (device.platform === "iOS") {
+      if (!this.lastPushTimeStamp) {
+        this.lastPushTimeStamp = new Date();
+        this.lastPushNotification = JSON.stringify(data);
+      }
+      else {
+        let elapsedTime = new Date() - this.lastPushTimeStamp;
+        let sameNotification = JSON.stringify(data) === this.lastPushNotification;
+        //
+        delete this.lastPushTimeStamp;
+        delete this.lastPushNotification;
+        //
+        // Due to a bug in iOS 18, the "notification" listener fires twice (https://forums.developer.apple.com/forums/thread/761597)
+        // So I skip the second notification if it's the same as the first one and it arrived after less than 500ms
+        if (elapsedTime < 500 && sameNotification)
+          return;
+      }
+    }
+    //
     req.app.sendMessage({obj: "device-notification", id: "onClick", content: data});
     //
     if (data.additionalData.notId) {
@@ -171,7 +190,7 @@ Plugin.Notification.register = function (req)
         }, data.additionalData.notId);
       }.bind(this), 20000);
     }
-  });
+  }.bind(this));
   //
   this.push.on('error', function (e) {
     var msg = e.message || "error";

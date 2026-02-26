@@ -62,7 +62,8 @@ Shell.config = {
     "Touchid": {},
     "Speech": {},
     "Ble": {},
-    "Pdf": {}
+    "Pdf": {},
+    "Oidc": {}
   },
   "strings": {
     "title": "Instant Developer Application Container",

@@ -10,3 +10,12 @@ platformsManager.replaceTextInFile({
   filePath: "/CordovaLib/Classes/Private/Plugins/CDVWebViewEngine/CDVWebViewEngine.m",
   platform: platformsManager.platforms.ios
 });
+//
+// Update Pods deployment target to 11.0
+platformsManager.replaceTextInFile({
+  searchValue: "IPHONEOS_DEPLOYMENT_TARGET = 8.0",
+  newValue: "IPHONEOS_DEPLOYMENT_TARGET = 11.0",
+  filePath: "/Pods/Pods.xcodeproj/project.pbxproj",
+  all: true,
+  platform: platformsManager.platforms.ios
+});

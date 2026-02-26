@@ -146,5 +146,36 @@ module.exports = function (context) {
         fs.writeFileSync(batteryPlugin, batteryPluginNewContent);
       }
     }
+    //
+    // Fix cordova-plugin-push
+    let pushPlugin = rootdir + "/plugins/@havesource/cordova-plugin-push/src/ios/AppDelegate+notification.m";
+    if (fs.existsSync(pushPlugin)) {
+      let pushPluginOldContent = fs.readFileSync(pushPlugin).toString("utf-8");
+      let pushPluginNewContent = "";
+      //
+      if (pushPluginOldContent.indexOf("// Fix isInline") === -1) {
+        // Push notifications have always to be delivered to app, not just in case app is not active
+        pushPluginOldContent = pushPluginOldContent.replace("application.applicationState != UIApplicationStateActive", "application.applicationState != UIApplicationStateActive || true");
+        //
+        // The "notification click" event has to be notified immediately if notification is silent (in case of background) or if app is in foreground
+        pushPluginOldContent = pushPluginOldContent.replace("silent == 1", "silent == 1 || application.applicationState == UIApplicationStateActive");
+        //
+        // Calculate isInline property in order to let app know if state was foreground or background when notification arrived
+        let lines = pushPluginOldContent.split("\n");
+        for (i = 0; i < lines.length; i++) {
+          if (i === 122) {
+            lines[i] = "\n            // Fix isInline\n";
+            lines[i] += "            if (application.applicationState == UIApplicationStateActive)\n";
+            lines[i] += "              pushHandler.isInline = YES;\n";
+            lines[i] += "            else\n";
+            lines[i] += "              pushHandler.isInline = NO;";
+          }
+          //
+          pushPluginNewContent += lines[i] + "\n";
+        }
+        //
+        fs.writeFileSync(pushPlugin, pushPluginNewContent);
+      }
+    }
   }
 };

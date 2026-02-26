@@ -12,7 +12,7 @@ module.exports = function (context) {
   else {
     console.log(gradle_file + " not found. Skipping");
   }
-//
+  //
   googleServices_file = rootdir + "/google-services.json";
   dest_googleServices_file = android_dir + "/app/google-services.json";
   if (fs.existsSync(android_dir) && fs.existsSync(googleServices_file)) {
@@ -45,6 +45,24 @@ module.exports = function (context) {
     }
   };
   //
+  let replaceText = function (searchValue, newValue) {
+    // Get manifest path
+    let manifestPath = android_dir + "/app/src/main/AndroidManifest.xml";
+    //
+    // If it exists, remove text from it
+    if (fs.existsSync(manifestPath)) {
+      let manifestContent = fs.readFileSync(manifestPath).toString("utf-8");
+      //
+      // If text doesn't exists, do nothing
+      if (manifestContent.indexOf(searchValue) === -1)
+        return;
+      //
+      manifestContent = manifestContent.replace(searchValue, newValue);
+      //
+      fs.writeFileSync(manifestPath, manifestContent);
+    }
+  }
+  //
   let tag;
   //
   // If speech recognition plugin exists, add "android.speech.RecognitionService" to manifest
@@ -70,4 +88,22 @@ module.exports = function (context) {
     tag = "\t\t<intent>\n\t\t\t<action android:name=\"android.media.action.GET_CONTENT\"/>\n\t\t</intent>";
     appendTagToQueries(tag, "android.media.action.GET_CONTENT");
   }
+  //
+  // If cordova-plugin-file-opener2 plugin exists, remove "android.permission.REQUEST_INSTALL_PACKAGES"
+  let fileOpener2Path = rootdir + "/plugins/cordova-plugin-file-opener2";
+  if (fs.existsSync(fileOpener2Path))
+    replaceText("    <uses-permission android:name=\"android.permission.REQUEST_INSTALL_PACKAGES\" />\n", "");
+  //
+  // Fix missing android:exported="true" NoActionBar
+  replaceText("<activity android:configChanges=\"orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode\" android:label=\"@string/activity_name\" android:launchMode=\"singleTop\" android:name=\"MainActivity\" android:theme=\"@android:style/Theme.DeviceDefault.NoActionBar\" android:windowSoftInputMode=\"adjustResize\">",
+              "<activity android:exported=\"true\" android:configChanges=\"orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode\" android:label=\"@string/activity_name\" android:launchMode=\"singleTop\" android:name=\"MainActivity\" android:theme=\"@android:style/Theme.DeviceDefault.NoActionBar\" android:windowSoftInputMode=\"adjustResize\">");
+  // Fix missing android:exported="true" FileSharing
+  replaceText("<receiver android:enabled=\"true\" android:name=\"nl.xservices.plugins.ShareChooserPendingIntent\">",
+              "<receiver android:exported=\"true\" android:enabled=\"true\" android:name=\"nl.xservices.plugins.ShareChooserPendingIntent\">");
+  // Fix missing android:exported="true" FCM
+  replaceText("<service android:name=\"com.adobe.phonegap.push.FCMService\">",
+              "<service android:exported=\"true\" android:name=\"com.adobe.phonegap.push.FCMService\">");
+  // Fix midding android:exported="true" PhoneGap Push
+  replaceText("<service android:name=\"com.adobe.phonegap.push.PushInstanceIDListenerService\">",
+              "<service android:exported=\"true\" android:name=\"com.adobe.phonegap.push.PushInstanceIDListenerService\">")
 };

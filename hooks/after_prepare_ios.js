@@ -24,7 +24,8 @@ function findFiles(base,ext,files,result)
 //
 ext_file_list = findFiles(ios_dir, 'sh');
 for (let i = 0; i < ext_file_list.length; i++) {
-  if (ext_file_list[i].toLowerCase().indexOf("pods") >= 0) {
+  if (ext_file_list[i].toLowerCase().indexOf("pods") >= 0 || 
+       ext_file_list[i].toLowerCase().indexOf("scripts") >= 0) {
     console.log("cambio i permessi per: " + ext_file_list[i]);
     fs.chmodSync(ext_file_list[i], 0o555);
   }

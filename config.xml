@@ -66,7 +66,7 @@
     <preference name="FadeSplashScreen" value="true" />
     <preference name="FadeSplashScreenDuration" value="500" />
     <preference name="Orientation" value="default" />
-    <preference name="android-targetSdkVersion" value="30" />
+    <preference name="android-targetSdkVersion" value="31" />
     <preference name="android-minSdkVersion" value="22" />
     <preference name="Suppresses3DTouchGesture" value="true" />
     <preference name="AllowInlineMediaPlayback" value="true" />

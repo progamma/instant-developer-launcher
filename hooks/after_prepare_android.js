@@ -67,7 +67,7 @@ module.exports = function (context) {
     else {
       console.log("missing", pathToUse);
     }
-  }
+  };
   //
   let tag;
   //
@@ -102,23 +102,23 @@ module.exports = function (context) {
   //
   // Fix missing android:exported="true" - NoActionBar
   replaceTextInFile("<activity android:configChanges=\"orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode\" android:label=\"@string/activity_name\" android:launchMode=\"singleTop\" android:name=\"MainActivity\" android:theme=\"@android:style/Theme.DeviceDefault.NoActionBar\" android:windowSoftInputMode=\"adjustResize\">",
-              "<activity android:exported=\"true\" android:configChanges=\"orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode\" android:label=\"@string/activity_name\" android:launchMode=\"singleTop\" android:name=\"MainActivity\" android:theme=\"@android:style/Theme.DeviceDefault.NoActionBar\" android:windowSoftInputMode=\"adjustResize\">");
+          "<activity android:exported=\"true\" android:configChanges=\"orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode\" android:label=\"@string/activity_name\" android:launchMode=\"singleTop\" android:name=\"MainActivity\" android:theme=\"@android:style/Theme.DeviceDefault.NoActionBar\" android:windowSoftInputMode=\"adjustResize\">");
   //
   // Fix missing android:exported="true" - FileSharing
   replaceTextInFile("<receiver android:enabled=\"true\" android:name=\"nl.xservices.plugins.ShareChooserPendingIntent\">",
-              "<receiver android:exported=\"true\" android:enabled=\"true\" android:name=\"nl.xservices.plugins.ShareChooserPendingIntent\">");
+          "<receiver android:exported=\"true\" android:enabled=\"true\" android:name=\"nl.xservices.plugins.ShareChooserPendingIntent\">");
   //
   // Fix missing android:exported="true" - FCM
   replaceTextInFile("<service android:name=\"com.adobe.phonegap.push.FCMService\">",
-              "<service android:exported=\"true\" android:name=\"com.adobe.phonegap.push.FCMService\">");
+          "<service android:exported=\"true\" android:name=\"com.adobe.phonegap.push.FCMService\">");
   //
   // Fix missing android:exported="true" - PhoneGap Push
   replaceTextInFile("<service android:name=\"com.adobe.phonegap.push.PushInstanceIDListenerService\">",
-              "<service android:exported=\"true\" android:name=\"com.adobe.phonegap.push.PushInstanceIDListenerService\">")
+          "<service android:exported=\"true\" android:name=\"com.adobe.phonegap.push.PushInstanceIDListenerService\">");
   //
   // Fix missing android:exported="true" mauron85/background-geolocation-android
   replaceTextInFile("<service android:name=\"com.marianhello.bgloc.sync.AuthenticatorService\">",
-              "<service android:exported=\"true\" android:name=\"com.marianhello.bgloc.sync.AuthenticatorService\">")
+          "<service android:exported=\"true\" android:name=\"com.marianhello.bgloc.sync.AuthenticatorService\">");
   //
   // Fix unresolved symbol FLAG_MUTABLE
   replaceTextInFile("PendingIntent.FLAG_MUTABLE", "0x02000000", "/app/src/main/java/com/adobe/phonegap/push/FCMService.kt");

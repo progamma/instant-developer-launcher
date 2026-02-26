@@ -58,4 +58,27 @@ module.exports = function (context) {
     skipCondition: {type: "includes", not: true, text: "<uses-permission android:maxSdkVersion=\"32\" android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />"},
     all: true
   });
+  //
+  // Fix plugins replacing "jcenter" with "mavenCentral" in their gradle file (change required by gradle 8.13)
+  platformsManager.replaceTextInFile({
+    searchValue: "jcenter",
+    newValue: "mavenCentral",
+    filePath: "/com.unarin.cordova.beacon/instantdeveloper-cordova-plugin-ibeacon.gradle",
+    platform: platformsManager.platforms.android
+  });
+  //
+  platformsManager.replaceTextInFile({
+    searchValue: "jcenter",
+    newValue: "//jcenter",
+    filePath: "/@moodlehq/cordova-plugin-local-notification/instantdeveloper-localnotification.gradle",
+    platform: platformsManager.platforms.android,
+    skipCondition: {type: "includes", text: "//jcenter"}
+  });
+  //
+  platformsManager.replaceTextInFile({
+    searchValue: "jcenter",
+    newValue: "mavenCentral",
+    filePath: "/phonegap-plugin-barcodescanner/instantdeveloper-barcodescanner.gradle",
+    platform: platformsManager.platforms.android
+  });
 };

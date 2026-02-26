@@ -59,7 +59,7 @@ Plugin.Preferences.store = function (req)
  */
 Plugin.Preferences.isIgnoringBatteryOptimizations = function (req)
 {
-  if (Shell.isIOS)
+  if (Shell.isIOS())
     req.setResult();
   else {
     cordova.plugins.DozeOptimize.IsIgnoringBatteryOptimizations(function (result) {
@@ -75,7 +75,7 @@ Plugin.Preferences.isIgnoringBatteryOptimizations = function (req)
  */
 Plugin.Preferences.isIgnoringDataSaver = function (req)
 {
-  if (Shell.isIOS)
+  if (Shell.isIOS())
     req.setResult();
   else {
     cordova.plugins.DozeOptimize.IsIgnoringDataSaver(function (result) {
@@ -91,7 +91,7 @@ Plugin.Preferences.isIgnoringDataSaver = function (req)
  */
 Plugin.Preferences.ignoreBatteryOptimizations = function (req)
 {
-  if (Shell.isIOS)
+  if (Shell.isIOS())
     req.setResult();
   else {
     cordova.plugins.DozeOptimize.RequestOptimizations(function (result) {
@@ -107,7 +107,7 @@ Plugin.Preferences.ignoreBatteryOptimizations = function (req)
  */
 Plugin.Preferences.displayOptimizationsMenu = function (req)
 {
-  if (Shell.isIOS)
+  if (Shell.isIOS())
     req.setResult();
   else {
     cordova.plugins.DozeOptimize.RequestOptimizationsMenu(function (result) {
@@ -123,7 +123,7 @@ Plugin.Preferences.displayOptimizationsMenu = function (req)
  */
 Plugin.Preferences.displayDataSaverMenu = function (req)
 {
-  if (Shell.isIOS)
+  if (Shell.isIOS())
     req.setResult();
   else {
     cordova.plugins.DozeOptimize.RequestDataSaverMenu(function (result) {

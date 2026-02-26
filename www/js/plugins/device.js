@@ -151,7 +151,8 @@ Plugin.Device.startApp = function (app)
  */
 Plugin.Device.lockOrientation = function (req)
 {
-  window.screen.orientation.lock(req.params);
+  if (!!window.screen.orientation.lock)
+    window.screen.orientation.lock(req.params);
 };
 
 
@@ -160,7 +161,8 @@ Plugin.Device.lockOrientation = function (req)
  */
 Plugin.Device.unlockOrientation = function ()
 {
-  window.screen.orientation.unlock();
+  if (!!window.screen.orientation.unlock)
+    window.screen.orientation.unlock();
 };
 
 

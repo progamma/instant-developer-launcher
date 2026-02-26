@@ -45,7 +45,6 @@
       "cordova-plugin-add-swift-support": {},
       "cordova-plugin-appavailability": {},
       "cordova-plugin-app-event": {},
-      "cordova-plugin-x-socialsharing": {},
       "cordova-plugin-bluetooth-peripheral-usage-description": {
         "TEXT": "This app need to access bluetooth services"
       },
@@ -112,9 +111,7 @@
     "cordova-plugin-velda-devicefeedback": "^0.0.2",
     "cordova-plugin-vibration": "^3.1.1",
     "cordova-plugin-wkwebview-file-xhr": "^3.0.0",
-    "cordova-plugin-x-socialsharing": "^6.0.3",
     "cordova-plugin-zip": "^3.1.0",
-    "es6-promise-plugin": "^4.2.2",
     "phonegap-nfc": "^1.2.0",
     "phonegap-plugin-barcodescanner": "^8.1.0"
   },

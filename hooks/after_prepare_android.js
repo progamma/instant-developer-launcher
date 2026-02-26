@@ -45,21 +45,27 @@ module.exports = function (context) {
     }
   };
   //
-  let replaceText = function (searchValue, newValue) {
+  // Replaced text in file, uses AndroidManifest.xml if filePath is not specificed
+  let replaceTextInFile = function (searchValue, newValue, filePath) {
     // Get manifest path
-    let manifestPath = android_dir + "/app/src/main/AndroidManifest.xml";
+    let pathToUse = android_dir + (filePath || "/app/src/main/AndroidManifest.xml");
     //
     // If it exists, remove text from it
-    if (fs.existsSync(manifestPath)) {
-      let manifestContent = fs.readFileSync(manifestPath).toString("utf-8");
+    if (fs.existsSync(pathToUse)) {
+      let fileContent = fs.readFileSync(pathToUse).toString("utf-8");
       //
       // If text doesn't exists, do nothing
-      if (manifestContent.indexOf(searchValue) === -1)
+      console.log("searchFor", pathToUse);
+      if (fileContent.indexOf(searchValue) === -1)
         return;
       //
-      manifestContent = manifestContent.replace(searchValue, newValue);
+      fileContent = fileContent.replace(searchValue, newValue);
       //
-      fs.writeFileSync(manifestPath, manifestContent);
+      console.log("wrote", pathToUse);
+      fs.writeFileSync(pathToUse, fileContent);
+    }
+    else {
+      console.log("missing", pathToUse);
     }
   }
   //
@@ -92,18 +98,31 @@ module.exports = function (context) {
   // If cordova-plugin-file-opener2 plugin exists, remove "android.permission.REQUEST_INSTALL_PACKAGES"
   let fileOpener2Path = rootdir + "/plugins/cordova-plugin-file-opener2";
   if (fs.existsSync(fileOpener2Path))
-    replaceText("    <uses-permission android:name=\"android.permission.REQUEST_INSTALL_PACKAGES\" />\n", "");
+    replaceTextInFile("    <uses-permission android:name=\"android.permission.REQUEST_INSTALL_PACKAGES\" />\n", "");
   //
-  // Fix missing android:exported="true" NoActionBar
-  replaceText("<activity android:configChanges=\"orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode\" android:label=\"@string/activity_name\" android:launchMode=\"singleTop\" android:name=\"MainActivity\" android:theme=\"@android:style/Theme.DeviceDefault.NoActionBar\" android:windowSoftInputMode=\"adjustResize\">",
+  // Fix missing android:exported="true" - NoActionBar
+  replaceTextInFile("<activity android:configChanges=\"orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode\" android:label=\"@string/activity_name\" android:launchMode=\"singleTop\" android:name=\"MainActivity\" android:theme=\"@android:style/Theme.DeviceDefault.NoActionBar\" android:windowSoftInputMode=\"adjustResize\">",
               "<activity android:exported=\"true\" android:configChanges=\"orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode\" android:label=\"@string/activity_name\" android:launchMode=\"singleTop\" android:name=\"MainActivity\" android:theme=\"@android:style/Theme.DeviceDefault.NoActionBar\" android:windowSoftInputMode=\"adjustResize\">");
-  // Fix missing android:exported="true" FileSharing
-  replaceText("<receiver android:enabled=\"true\" android:name=\"nl.xservices.plugins.ShareChooserPendingIntent\">",
+  //
+  // Fix missing android:exported="true" - FileSharing
+  replaceTextInFile("<receiver android:enabled=\"true\" android:name=\"nl.xservices.plugins.ShareChooserPendingIntent\">",
               "<receiver android:exported=\"true\" android:enabled=\"true\" android:name=\"nl.xservices.plugins.ShareChooserPendingIntent\">");
-  // Fix missing android:exported="true" FCM
-  replaceText("<service android:name=\"com.adobe.phonegap.push.FCMService\">",
+  //
+  // Fix missing android:exported="true" - FCM
+  replaceTextInFile("<service android:name=\"com.adobe.phonegap.push.FCMService\">",
               "<service android:exported=\"true\" android:name=\"com.adobe.phonegap.push.FCMService\">");
-  // Fix midding android:exported="true" PhoneGap Push
-  replaceText("<service android:name=\"com.adobe.phonegap.push.PushInstanceIDListenerService\">",
+  //
+  // Fix missing android:exported="true" - PhoneGap Push
+  replaceTextInFile("<service android:name=\"com.adobe.phonegap.push.PushInstanceIDListenerService\">",
               "<service android:exported=\"true\" android:name=\"com.adobe.phonegap.push.PushInstanceIDListenerService\">")
+  //
+  // Fix missing android:exported="true" mauron85/background-geolocation-android
+  replaceTextInFile("<service android:name=\"com.marianhello.bgloc.sync.AuthenticatorService\">",
+              "<service android:exported=\"true\" android:name=\"com.marianhello.bgloc.sync.AuthenticatorService\">")
+  //
+  // Fix unresolved symbol FLAG_MUTABLE
+  replaceTextInFile("PendingIntent.FLAG_MUTABLE", "0x02000000", "/app/src/main/java/com/adobe/phonegap/push/FCMService.kt");
+  //
+  // Fix FLAG_MUTABLE - NFC
+  replaceTextInFile("            pendingIntent = PendingIntent.getActivity(activity, 0, intent, 0);", "if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {\n                pendingIntent = PendingIntent.getActivity(activity, 0, intent, PendingIntent.FLAG_MUTABLE);\n            } else {\n                pendingIntent = PendingIntent.getActivity(activity, 0, intent, 0);\n            }", "/app/src/main/java/com/chariotsolutions/nfc/plugin/NfcPlugin.java");
 };

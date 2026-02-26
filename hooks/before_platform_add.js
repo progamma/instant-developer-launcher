@@ -98,6 +98,19 @@ module.exports = function (context) {
         fs.writeFileSync(inAppBrowserJava, inAppBrowserJavaContent);
       }
     }
+    //
+    // Fix cordova-plugin-push Android
+    let pushPlugin = rootdir + "/plugins/@havesource/cordova-plugin-push/plugin.xml";
+    if (fs.existsSync(pushPlugin)) {
+      let pushPluginOldContent = fs.readFileSync(pushPlugin).toString("utf-8");
+      let pushPluginNewContent = "";
+      //
+      if (pushPluginOldContent.indexOf("<preference name=\"GradlePluginKotlinVersion\" value=\"1.5.20\" />") > -1) {
+        pushPluginNewContent = pushPluginOldContent.replace("<preference name=\"GradlePluginKotlinVersion\" value=\"1.5.20\" />", "<preference name=\"GradlePluginKotlinVersion\" value=\"1.7.10\" />")
+        //
+        fs.writeFileSync(pushPlugin, pushPluginNewContent);
+      }
+    }
   }
   //
   if (ios) {
@@ -147,7 +160,7 @@ module.exports = function (context) {
       }
     }
     //
-    // Fix cordova-plugin-push
+    // Fix cordova-plugin-push iOS
     let pushPlugin = rootdir + "/plugins/@havesource/cordova-plugin-push/src/ios/AppDelegate+notification.m";
     if (fs.existsSync(pushPlugin)) {
       let pushPluginOldContent = fs.readFileSync(pushPlugin).toString("utf-8");

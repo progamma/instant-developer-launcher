@@ -216,7 +216,6 @@
         <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value=" " />
     </plugin>
     <plugin name="cordova-plugin-add-swift-support" spec="^2.0.2" />
-    <plugin name="cordova-plugin-x-socialsharing" spec="^6.0.3" />
     <plugin name="cordova-plugin-geolocation" spec="^4.1.0">
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="This app requires location services" />
     </plugin>

@@ -4,7 +4,7 @@
  * All rights reserved
  */
 
-/* global device */
+/* global device, SafeAreaInset */
 
 var Shell = Shell || {};
 var PlugMan = PlugMan || {};
@@ -14,7 +14,7 @@ var EacAPI = EacAPI || {};
 var cordova = cordova || undefined;
 
 /**
- * initialize the shell
+ * Initialize the shell
  */
 Shell.init = function ()
 {
@@ -26,6 +26,8 @@ Shell.init = function ()
   //
   Shell.initUserInterface();
   //
+  Shell.handleSafeArea();
+  //
   // Pre-init native dialogs
   //Plugin.Notification.init();
   //
@@ -33,6 +35,71 @@ Shell.init = function ()
     // No cordova: no plugin complete event!
     Shell.pluginComplete();
   }
+};
+
+
+/**
+ * Handle safe area
+ */
+Shell.handleSafeArea = function ()
+{
+  let addListeners = () => {
+    window.addEventListener("resize", Shell.setSafeAreaVariables);
+    screen.orientation.addEventListener("change", () => Shell.setSafeAreaVariables);
+  };
+  //
+  // env(safe-area-inset-*) always return 0 on android so they need to be fixed using cordova-plugin-insets
+  if (!Shell.isIOS()) {
+    window.totalpave.Inset.create().then((inset) => {
+      SafeAreaInset = inset;
+      //
+      // Add listener on inset change
+      SafeAreaInset.addListener(Shell.setSafeAreaVariables);
+      //
+      // Add window resize and screen orientation change listeners since not all safe are changes are catched by above listener
+      addListeners();
+    });
+  }
+  else
+    addListeners();
+};
+
+
+/**
+ * Set safe area variables
+ */
+Shell.setSafeAreaVariables = function ()
+{
+  let insetValues = {};
+  if (!Shell.isIOS()) {
+    insetValues = SafeAreaInset.getInset();
+    //
+    // In case of primary landscape orientation (camera on left side), give right safe area the same value as left one.
+    // Do the opposite in case of secondary landscape orientation.
+    // In this way app content will be horizontally centered
+    if (screen.orientation.type === "landscape-primary")
+      insetValues.right = insetValues.left;
+    else if (screen.orientation.type === "landscape-secondary")
+      insetValues.left = insetValues.right;
+    //
+    let root = document.querySelector(":root");
+    root.style.setProperty("--safe-area-inset-top", insetValues.top + "px");
+    root.style.setProperty("--safe-area-inset-bottom", insetValues.bottom + "px");
+    root.style.setProperty("--safe-area-inset-left", insetValues.left + "px");
+    root.style.setProperty("--safe-area-inset-right", insetValues.right + "px");
+  }
+  else {
+    let documentStyle = getComputedStyle(document.documentElement);
+    //
+    insetValues.top = parseFloat(documentStyle.getPropertyValue("--safe-area-inset-top"));
+    insetValues.bottom = parseFloat(documentStyle.getPropertyValue("--safe-area-inset-bottom"));
+    insetValues.left = parseFloat(documentStyle.getPropertyValue("--safe-area-inset-left"));
+    insetValues.right = parseFloat(documentStyle.getPropertyValue("--safe-area-inset-right"));
+  }
+  //
+  // Tell app to handle safe area using inset values
+  for (let name in AppMan.apps)
+    AppMan.apps[name].sendMessage({obj: "device-ui", id: "handleSafeArea", client: true, content: insetValues});
 };
 
 
@@ -463,7 +530,11 @@ Shell.pluginComplete = function ()
  */
 Shell.showPage = function (page)
 {
+  Shell.oldPage = Shell.page;
   Shell.page = page;
+  //
+  rc("container-main", Shell.oldPage + "-page");
+  ac("container-main", Shell.page + "-page");
   //
   ac("btn-login-cont", "hidden");
   ac("btn-signup-cont", "hidden");

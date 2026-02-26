@@ -62,5 +62,7 @@ Plugin.StatusBar.setBackgroundColor = function (req)
  */
 Plugin.StatusBar.overlaysWebView = function (req)
 {
+  req.app.setFullscreen(req.params.status);
+  //
   StatusBar.overlaysWebView(req.params.status);
 };

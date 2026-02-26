@@ -1023,18 +1023,28 @@ Shell.ShellDriver.prototype.removeDirRecursive = function (directory, cb)
 
 
 /**
- * Makes an HTTP GET request to a web server
- * @param {object} url
- * @param {string} method
- * @param {object} options
+ * Makes a HTTP request to a web server
+ * @param {Object} url
+ * @param {String} method
+ * @param {Object} options
  * @param {function} cb
  */
 Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
 {
-  options = Object.assign({responseType: "text"}, options);
+  options = Object.assign({
+    responseType: "text",
+    params: {},
+    headers: {}
+  }, options);
+  //
+  // Make the header keys lowercase
+  let headers = {};
+  for (let key in options.headers)
+    headers[key.toLowerCase()] = options.headers[key];
+  options.headers = headers;
   //
   // Extract and encode params from  options
-  // * @param {object} obj
+  // * @param {Object} obj
   let parseParams = function (obj) {
     let str = [];
     for (let p in obj) {
@@ -1044,19 +1054,9 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
     return str.join("&");
   };
   //
-  let uri = url.url;
-  //
-  // Multipart request
   let multiPart = false;
-  //
-  // Download
   let download = false;
-  //
-  // Upload
   let upload = false;
-  //
-  // Creates request object
-  let req = new XMLHttpRequest();
   //
   // Checks case
   switch (method) {
@@ -1076,67 +1076,48 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
       break;
   }
   //
-  // Check user options
-  if (!options.headers)
-    options.headers = {};
+  // If not specified, the post request type is multipart
+  if (options.headers["content-type"])
+    multiPart = false;
   //
   // Get eventually values for the autentication
   if (options.authentication)
-    options.headers.Authorization = "Basic " + btoa(options.authentication.username + ":" + options.authentication.password);
-  //
-  // Set timeout request
-  if (options.timeOut)
-    req.timeout = options.timeOut;
-  //
-  // If not specified, the post request type is multipart
-  if (options.headers["Content-Type"])
-    multiPart = false;
+    options.headers.authorization = "Basic " + btoa(options.authentication.username + ":" + options.authentication.password);
   //
   // Create the complete query string
   let params = parseParams(options.params);
   //
   // Add it to the url (for GET method)
+  let uri = url.url;
   if (method !== "POST" && params)
-    uri += (uri.indexOf("?") > -1 ? "&" : "?") + params;
+    uri += (uri.includes("?") ? "&" : "?") + params;
   //
   if (upload || download) {
     let filePath = cordova.file[options._file.type === "temp" ? "cacheDirectory" : "dataDirectory"];
     filePath += "fs/" + this.appName + "/" + options._file.path;
     let fileTransfer = new FileTransfer();
     //
+    // Third download method parameter (fourth for upload method) is "trustAllHosts".
+    // It's an optional parameter, defaults to false. If set to true, it accepts all security certificates.
+    // This is useful since Android rejects self-signed security certificates. Not recommended for production use.
+    // Supported on Android and iOS
     if (download) {
-      fileTransfer.download(
-              uri,
-              filePath,
-              function (entry) {
-                let d = entry.toURL();
-                d = Plugin.Shelldriverhandler.adaptUrl(d);
-                cb({publicUrl: d});
-              },
-              function (error) {
-                cb({error: error});
-              },
-              /*
-               //trustAllHosts: Optional parameter, defaults to false. If set to true, it accepts all security certificates.
-               //This is useful since Android rejects self-signed security certificates. Not recommended for production use.
-               //Supported on Android and iOS. (boolean)
-               */
-              false,
-              //options: Optional parameters, currently only supports headers (such as Authorization (Basic Authentication), etc).
-                      {headers: options.headers}
-              );
-              return;
-            }
+      fileTransfer.download(uri, filePath, entry => {
+        let d = entry.toURL();
+        d = Plugin.Shelldriverhandler.adaptUrl(d);
+        cb({publicUrl: d});
+      }, error => cb({error}), false, {headers: options.headers});
+      //
+      return;
+    }
     else if (upload) {
-      /*
-       //fileKey: The name of the form element. Defaults to file. (DOMString)
-       //fileName: The file name to use when saving the file on the server. Defaults to image.jpg. (DOMString)
-       //httpMethod: The HTTP method to use - either PUT or POST. Defaults to POST. (DOMString)
-       //mimeType: The mime type of the data to upload. Defaults to image/jpeg. (DOMString)
-       //params: A set of optional key/value pairs to pass in the HTTP request. (Object)
-       //chunkedMode: Whether to upload the data in chunked streaming mode. Defaults to true. (Boolean)
-       //headers: A map of header name/header values. Use an array to specify more than one value. (Object)
-       */
+      // fileKey: The name of the form element. Defaults to file. (DOMString)
+      // fileName: The file name to use when saving the file on the server. Defaults to image.jpg. (DOMString)
+      // httpMethod: The HTTP method to use - either PUT or POST. Defaults to POST. (DOMString)
+      // mimeType: The mime type of the data to upload. Defaults to image/jpeg. (DOMString)
+      // params: A set of optional key/value pairs to pass in the HTTP request. (Object)
+      // chunkedMode: Whether to upload the data in chunked streaming mode. Defaults to true. (Boolean)
+      // headers: A map of header name/header values. Use an array to specify more than one value. (Object)
       let opts = new FileUploadOptions();
       opts.fileKey = options._nameField;
       opts.fileName = options._fileName;
@@ -1146,27 +1127,17 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
       opts.chunkedMode = true;
       opts.headers = options.headers;
       //
-      fileTransfer.upload(
-              filePath,
-              uri,
-              function (r) {
-                cb({status: r.responseCode, headers: r.headers, body: r.response});
-              },
-              function (error) {
-                cb({error: error});
-              },
-              //options: Optional parameters, currently only supports headers (such as Authorization (Basic Authentication), etc).
-              opts,
-              /*
-               //trustAllHosts: Optional parameter, defaults to false. If set to true, it accepts all security certificates.
-               //This is useful since Android rejects self-signed security certificates. Not recommended for production use.
-               //Supported on Android and iOS. (boolean)
-               */
-              false
-              );
+      fileTransfer.upload(filePath, uri, r => cb({status: r.responseCode, headers: r.headers, body: r.response}), error => cb({error}), opts, false);
       return;
     }
   }
+  //
+  // Creates request object
+  let req = new XMLHttpRequest();
+  //
+  // Set request timeout
+  if (options.timeOut)
+    req.timeout = options.timeOut;
   //
   // Initialize request
   req.open(method, uri, true);
@@ -1174,63 +1145,60 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
   // To handle better response, want receive binary data
   req.responseType = (download ? "arraybuffer" : options.responseType || "text");
   //
-  let data = null;
+  let data;
   //
   // Custom body case
   if (options.body) {
+    data = options.body;
+    //
     if (typeof options.bodyType === "string")
-      options.headers["Content-Type"] = options.bodyType;
-    else if (!options.headers["Content-Type"])
-      options.headers["Content-Type"] = "application/octet-stream";
+      options.headers["content-type"] = options.bodyType;
+    else if (!options.headers["content-type"])
+      options.headers["content-type"] = "application/octet-stream";
     //
     // Types allowed for the custom body are: string and ArrayBuffer, but you can pass an object to
     // get a JSON custom body
-    if (options.body && (typeof options.body === "object") && !(options.body instanceof ArrayBuffer)) {
-      try {
-        options.body = JSON.stringify(options.body);
+    if (typeof options.body === "object") {
+      if (!(options.body instanceof ArrayBuffer)) {
+        try {
+          data = JSON.stringify(options.body);
+          options.headers["content-type"] = "application/json";
+        }
+        catch (e) {
+          return cb({error: new Error(`Cannot stringify custom body: ${e.message}`)});
+        }
       }
-      catch (ex) {
-        return cb({error: new Error("Cannot stringify custom body")});
-      }
-      options.headers["Content-Type"] = "application/json";
     }
-    if (options.body instanceof ArrayBuffer || typeof options.body === "string")
-      data = options.body;
-    else
-      return cb({error: new Error("Custom body must be string or ArrayBuffer")});
+    else if (typeof options.body !== "string")
+      return cb({error: new Error("Custom body must be String, Object or ArrayBuffer")});
   }
-  // Multipart request
-  else if (multiPart) {
+  else if (multiPart) { // Multipart request
     // Create formdata object
     data = new FormData();
     //
     // Add params to formData object
     let sepParams = params.split("&");
     for (let i = 0; i < sepParams.length; i++) {
-      let pair = sepParams[i].split('=');
-      if (pair[0] && pair[1])
-        data.append(decodeURIComponent(pair[0]), decodeURIComponent(pair[1]));
+      let [key, value] = sepParams[i].split("=");
+      if (key && value)
+        data.append(decodeURIComponent(key), decodeURIComponent(value));
     }
   }
   //
   // Add custom headers
-  for (let index in options.headers)
-    req.setRequestHeader(index, options.headers[index]);
+  for (let header in options.headers)
+    req.setRequestHeader(header, options.headers[header]);
   //
   req.send(data);
   //
   // Listen to timeout event
-  req.ontimeout = function () {
-    cb({error: new Error("timeout request error")});
-  };
+  req.ontimeout = () => cb({error: new Error("timeout request error")});
   //
   // Listen to request error events
-  req.onerror = function () {
-    cb({error: new Error("unknown error")});
-  };
+  req.onerror = error => cb({error: new Error("unknown error")});
   //
   // Listen to response load event
-  req.onload = function () {
+  req.onload = () => {
     // default encoding
     let encoding;
     let body = req.response;
@@ -1238,17 +1206,16 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
     if (body instanceof ArrayBuffer && options.responseType === "text") {
       // get encoding
       let responseContentType = req.getResponseHeader("Content-Type");
-      if (responseContentType && responseContentType.length >= 3) {
-        if (responseContentType.indexOf("text") >= 0 || responseContentType.substring(responseContentType.length - 3,
-                responseContentType.length) === "xml" || responseContentType.indexOf("application/json") >= 0) {
-          //
-          // Default encoding
-          encoding = "utf-8";
-          //
-          // Get encoding from "text/... charset=..." header
-          if (responseContentType.indexOf("charset") >= 0)
-            encoding = responseContentType.substr(responseContentType.indexOf("charset") + 8);
-        }
+      if (responseContentType?.includes("text")
+              || responseContentType?.endsWith("xml")
+              || responseContentType?.includes("application/json")) {
+        //
+        // Default encoding
+        encoding = "utf-8";
+        //
+        // Get encoding from "text/... charset=..." header
+        if (responseContentType.includes("charset"))
+          encoding = responseContentType.substr(responseContentType.indexOf("charset") + 8);
       }
       //
       // Encode the response
@@ -1257,7 +1224,7 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
         try {
           body = new TextDecoder(encoding).decode(dataView);
         }
-        catch (err) {
+        catch (e) {
           // If there is an error, the default decoding uses utf-8
           body = new TextDecoder("utf-8").decode(dataView);
         }
@@ -1268,16 +1235,14 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
     let response = {
       status: req.status,
       headers: {},
-      body: body
+      body
     };
     //
     // Headers as map
-    if (req.getAllResponseHeaders()) {
-      req.getAllResponseHeaders().trim().split("\r\n").forEach(function (v) {
-        let ss = v.split(":");
-        response.headers[ss[0].trim()] = ss[1].trim();
-      });
-    }
+    req.getAllResponseHeaders()?.trim().split("\n").forEach(v => {
+      let [key, value] = v.split(":");
+      response.headers[key.trim()] = value.trim();
+    });
     //
     cb(response);
   };

@@ -20,7 +20,7 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
       id="cordova-plugin-battery-status"
-      version="2.0.3">
+      version="3.0.0-dev">
     <name>Battery</name>
     <description>Cordova Battery Plugin</description>
     <license>Apache 2.0</license>
@@ -52,15 +52,6 @@
         </config-file>
         <header-file src="src/ios/CDVBattery.h" />
 	    <source-file src="src/ios/CDVBattery.m" />
-    </platform>
-
-    <!-- windows -->
-    <platform name="windows">
-        <js-module src="src/windows/BatteryProxy.js" name="Battery">
-            <runs />
-        </js-module>
-
-        <framework src="src/windows/BatteryStatus.winmd" custom="true" target="phone"/>
     </platform>
 
     <!-- browser -->

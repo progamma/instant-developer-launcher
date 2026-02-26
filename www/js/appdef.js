@@ -18,7 +18,8 @@ var process = undefined;
 
 /**
  * AppDef object
- * @param {object} config
+ * @param {Object} config
+ * @param {Boolean} init
  */
 var AppDef = AppDef || function (config, init)
 {
@@ -523,6 +524,10 @@ AppDef.prototype.onLoad = function (params)
       ac(this.iframe.id, "effect-moveFromRight");
   }
   //
+  // Set fullscreen by default
+  this.setFullscreen(true);
+  Shell.setSafeAreaVariables();
+  //
   // Initializing app plugins
   PlugMan.startApp(this);
   //
@@ -565,7 +570,6 @@ AppDef.prototype.stop = function (fromApp)
   //
   // Remove app after a while
   setTimeout(function () {
-    StatusBar.overlaysWebView(false);
     pthis.remove();
   }, this.root ? 10 : 700);
   //
@@ -849,16 +853,14 @@ AppDef.prototype.cleanFs = function (cb)
  */
 AppDef.prototype.install = function (cb)
 {
-  var dataDir = cordova.file.dataDirectory;
-  var appDir = "apps/";
-  var tempDir = dataDir + "/liveupdate/";
-  var pthis = this;
+  let dataPath = cordova.file.dataDirectory;
+  let tempPath = dataPath + "/liveupdate/";
   //
   // Say to to user
   this.updateDom();
   //
   // error codes
-  var fserror = {
+  let fserror = {
     1: "NOT_FOUND_ERR",
     2: "SECURITY_ERR",
     3: "ABORT_ERR",
@@ -872,76 +874,70 @@ AppDef.prototype.install = function (cb)
     11: "TYPE_MISMATCH_ERR",
     12: "PATH_EXISTS_ERR"
   };
-  var fterror = {
+  //
+  let fterror = {
     1: "FILE_NOT_FOUND_ERR",
     2: "INVALID_URL_ERR",
     3: "CONNECTION_ERR",
     4: "ABORT_ERR",
     5: "NOT_MODIFIED_ERR"
   };
-  var ftErrorHandler = function (error) {
-    var err = fterror[error.code] || error;
+  //
+  let ftErrorHandler = function (error) {
+    let err = fterror[error.code] || error;
     cb(err);
   };
-  var fsErrorHandler = function (error) {
-    var err = fserror[error.code] || error;
+  //
+  let fsErrorHandler = function (error) {
+    let err = fserror[error.code] || error;
     cb(err);
   };
+  //
+  let pthis = this;
   //
   // 1. download the version to tempdir/version.zip
   // 2. unzip it to apps/appname/
   // 3. delete it from tempdir/
-  var fileTransfer = new FileTransfer();
-  var uri = encodeURI(pthis.url);
-  fileTransfer.download(uri, tempDir + pthis.name + ".zip", function (zipFileEntry) {
-    // url of downloaded file
-    var fileUrl = zipFileEntry.toURL();
-    //
-    // create apps/appname
-    //  {create: true, exclusive: false} create if not there, don't complain if it's there
-    window.resolveLocalFileSystemURL(dataDir, function (dirEntry) {
-      dirEntry.getDirectory(appDir, {create: true, exclusive: false}, function (dirEntry) {
-        // in case we are updating, exclusive false
-        dirEntry.getDirectory(pthis.name, {create: true, exclusive: false}, function (fileEntry) {
-          //
-          // Delete previous app files
-          fileEntry.removeRecursively(function () {
-            //
-            var dirUrl = fileEntry.toURL();
-            //
-            // Unzipping app bundle
-            zip.unzip(fileUrl, dirUrl, function (result) {
-              //
-              // result = 0 success, result = -1 failure
-              // after unzipping, the zip file is deleted
-              zipFileEntry.remove(function (result2) {
-                // since removing the zip may also cause error, I do the
-                // check for the unzipping after removing the file,
-                // so that in any case I report all possible errors.
-                if (result === -1 || result2 === -1)
-                  cb("error unzipping app");
-                else {
-                  pthis.createFs(function (err) {
-                    if (err)
-                      cb(err);
-                    else {
-                      //
-                      pthis.installed = true;
-                      pthis.dir = dirUrl;
-                      pthis.updateDom();
-                      AppMan.saveApps();
-                      //
-                      cb();
-                    }
-                  });
-                }
+  window.resolveLocalFileSystemURL(dataPath, function (mainDir) {
+    // {create: true, exclusive: false} create if not there, don't complain if it's there
+    mainDir.getDirectory("liveupdate/", {create: true, exclusive: false}, function (liveupdateDir) {
+      let fileTransfer = new FileTransfer();
+      let uri = encodeURI(pthis.url);
+      fileTransfer.download(uri, tempPath + pthis.name + ".zip", function (zipFile) {
+        // Create apps/appname
+        mainDir.getDirectory("apps/", {create: true, exclusive: false}, function (appsDir) {
+          // In case we are updating, exclusive false
+          appsDir.getDirectory(pthis.name, {create: true, exclusive: false}, function (appDir) {
+            // Delete previous app files
+            appDir.removeRecursively(function () {
+              // Unzip app bundle and then delete zip file
+              zip.unzip(zipFile.nativeURL, appDir.nativeURL, function (unzipResult) {
+                // result = 0 success, result = -1 failure
+                zipFile.remove(function (removeZipResult) {
+                  if (unzipResult === -1 || removeZipResult === -1)
+                    cb("error unzipping app");
+                  else {
+                    pthis.createFs(function (err) {
+                      if (err)
+                        cb(err);
+                      else {
+                        pthis.installed = true;
+                        pthis.dir = appDir.toURL();
+                        pthis.updateDom();
+                        AppMan.saveApps();
+                        //
+                        cb();
+                      }
+                    });
+                  }
+                }, fsErrorHandler);
               }, fsErrorHandler);
             }, fsErrorHandler);
           }, fsErrorHandler);
         }, fsErrorHandler);
-      }, fsErrorHandler);
+      }, ftErrorHandler, false);
     }, fsErrorHandler);
-  }, ftErrorHandler, false);
+  }, fsErrorHandler);
 };
 
 
@@ -1053,6 +1049,7 @@ AppDef.prototype.isLoading = function ()
 
 /**
  * update params using url
+ * @param {Object} params
  */
 AppDef.prototype.updateParams = function (params)
 {
@@ -1061,3 +1058,14 @@ AppDef.prototype.updateParams = function (params)
   }
   Plugin.Lscookies.setCookie({app: this, params: {name: "app_params", value: JSON.stringify(params), exdays: 10000}});
 };
+
+
+/**
+ * Tell device to set fullscreen
+ * @param {Boolean} fullscreen
+ */
+AppDef.prototype.setFullscreen = function (fullscreen)
+{
+  this.sendMessage({obj: "device-ui", id: "setFullscreen", client: true, content: fullscreen});
+};
+

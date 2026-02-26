@@ -1,3 +1,4 @@
+var platformsManager = require("../utils/platformsManager.js");
 var fs = require("fs");
 rootdir = process.cwd();
 //
@@ -16,127 +17,125 @@ module.exports = function (context) {
   //
   if (android) {
     // Fix cordova-plugin-background-geolocation
-    let pluginXmlBGPath = rootdir + "/plugins/cordova-plugin-background-geolocation/plugin.xml";
+    // 1) This plugin uses default icon resource, that is defined as @mipmap/ic_launcher and not as @mipmap/icon on android.
+    // Thus I edit ICON preference from @mipmap/icon to @mipmap/ic_launcher in plugin.xml.
     //
-    if (fs.existsSync(pluginXmlBGPath)) {
-      let pluginXmlContent = fs.readFileSync(pluginXmlBGPath).toString("utf-8");
-      //
-      // This plugin uses default icon resource, that is defined as @mipmap/ic_launcher and not as @mipmap/icon on android.
-      // Thus I edit ICON preference from @mipmap/icon to @mipmap/ic_launcher in plugin.xml.
-      pluginXmlContent = pluginXmlContent.replace(/@mipmap\/icon/g, "@mipmap/ic_launcher");
-      //
-      // Also edit GOOGLE_PLAY_SERVICES_VERSION default version in order to fix error "cannot access zzbfm".
-      // (see https://forum.ionicframework.com/t/getting-apk-build-failure-when-using-ionic-native-push-and-ionic-native-background-geolocation/175419/9)
-      pluginXmlContent = pluginXmlContent.replace(/\"GOOGLE_PLAY_SERVICES_VERSION\" default=\"11\+\"/g, "\"GOOGLE_PLAY_SERVICES_VERSION\" default=\"15.0.1\"");
-      //
-      fs.writeFileSync(pluginXmlBGPath, pluginXmlContent);
-    }
+    // 2) Also edit GOOGLE_PLAY_SERVICES_VERSION default version in order to fix error "cannot access zzbfm".
+    // (see https://forum.ionicframework.com/t/getting-apk-build-failure-when-using-ionic-native-push-and-ionic-native-background-geolocation/175419/9)
+    platformsManager.replaceTextInFile({
+      searchValue: [
+        "@mipmap/icon",
+        "\"GOOGLE_PLAY_SERVICES_VERSION\" default=\"11+\""
+      ],
+      newValue: [
+        "@mipmap/ic_launcher",
+        "\"GOOGLE_PLAY_SERVICES_VERSION\" default=\"15.0.1\""
+      ],
+      filePath: "/plugins/cordova-plugin-background-geolocation/plugin.xml",
+      all: true
+    });
+    //
+    // 3) Replace "compile" with "implemetation"
+    platformsManager.replaceTextInFile({
+      searchValue: "compile",
+      newValue: "implementation",
+      filePath: "/plugins/cordova-plugin-background-geolocation/android/dependencies.gradle",
+      all: true
+    });
     //
     // Fix cordova-sms-plugin
-    let pluginXmlSMS = rootdir + "/plugins/cordova-sms-plugin/plugin.xml";
-    //
-    if (fs.existsSync(pluginXmlSMS)) {
-      let pluginXmlContent = fs.readFileSync(pluginXmlSMS).toString("utf-8");
-      //
-      // Edit plugin.xml in order to add SEND.SMS permission inside AndroidManifest.xml, since this permission is required to send SMS
-      if (pluginXmlContent.indexOf("android.permission.SEND_SMS") === -1) {
-        pluginXmlContent = pluginXmlContent.replace(/<platform name=\"android\">/g,
-                '<platform name="android">\n \
-            <config-file file="AndroidManifest.xml" target="app/src/main/AndroidManifest.xml" xmlns:android="http://schemas.android.com/apk/res/android" parent="/manifest">\n \
-              <uses-permission android:name="android.permission.SEND_SMS" />\n \
-            </config-file>');
-        //
-        fs.writeFileSync(pluginXmlSMS, pluginXmlContent);
-      }
-    }
+    // Edit plugin.xml in order to add SEND.SMS permission inside AndroidManifest.xml, since this permission is required to send SMS
+    platformsManager.replaceTextInFile({
+      searchValue: "<platform name=\"android\">",
+      newValue: "<platform name=\"android\">\n \
+            <config-file file=\"AndroidManifest.xml\" target=\"app/src/main/AndroidManifest.xml\" xmlns:android=\"http://schemas.android.com/apk/res/android\" parent=\"/manifest\">\n \
+              <uses-permission android:name=\"android.permission.SEND_SMS\" />\n \
+            </config-file>",
+      filePath: "/plugins/cordova-sms-plugin/plugin.xml",
+      skipCondition: {type: "includes", text: "android.permission.SEND_SMS"},
+      all: true
+    });
     //
     // Fix cordova-plugin-local-notification
-    let pluginXmlLocalNotification = rootdir + "/plugins/cordova-plugin-local-notification/plugin.xml";
+    // Comment android-sdk requirement since it's not applied correctly
+    platformsManager.replaceTextInFile({
+      searchValue: "<engine name=\"android-sdk\"     version=\">=26\" />",
+      newValue: "<!-- <engine name=\"android-sdk\"     version=\">=26\" /> -->",
+      filePath: "/plugins/cordova-plugin-local-notification/plugin.xml",
+      skipCondition: {type: "includes", text: "<!-- <engine name=\"android-sdk\"     version=\">=26\" /> -->"},
+      all: true
+    });
     //
-    if (fs.existsSync(pluginXmlLocalNotification)) {
-      let pluginXmlContent = fs.readFileSync(pluginXmlLocalNotification).toString("utf-8");
-      //
-      // Comment android-sdk requirement since it's not applied correctly
-      if (pluginXmlContent.indexOf('<!-- <engine name="android-sdk"     version=">=26" /> -->') === -1) {
-        pluginXmlContent = pluginXmlContent.replace(/<engine name="android-sdk"     version=">=26" \/>/g, '<!-- <engine name="android-sdk"     version=">=26" /> -->');
-        //
-        fs.writeFileSync(pluginXmlLocalNotification, pluginXmlContent);
-      }
-    }
+    // Replace "compile" with "implementation"
+    platformsManager.replaceTextInFile({
+      searchValue: "compile",
+      newValue: "implementation",
+      filePath: "/plugins/cordova-plugin-local-notification/src/android/build/localnotification.gradle",
+      all: true
+    });
     //
     // Fix cordova-plugin-ionic-keyboard
-    let keyboardJava = rootdir + "/plugins/cordova-plugin-ionic-keyboard/src/android/CDVIonicKeyboard.java";
-    //
-    if (fs.existsSync(keyboardJava)) {
-      let keyboardJavaContent = fs.readFileSync(keyboardJava).toString("utf-8");
-      //
-      if (keyboardJavaContent.indexOf("import android.view.Window;") === -1)
-        keyboardJavaContent = keyboardJavaContent.replace("import android.view.ViewTreeObserver.OnGlobalLayoutListener;", "import android.view.ViewTreeObserver.OnGlobalLayoutListener;\nimport android.view.Window;");
-      //
-      keyboardJavaContent = keyboardJavaContent.replace("frameLayoutParams.height = usableHeightSansKeyboard - heightDifference;", "frameLayoutParams.height = usableHeightNow - new Rect().top;");
-      keyboardJavaContent = keyboardJavaContent.replace("frameLayoutParams.height = usableHeightSansKeyboard;", "frameLayoutParams.height = usableHeightNow;");
-      keyboardJavaContent = keyboardJavaContent.replace("return (r.bottom - r.top);", "final Window window = cordova.getActivity().getWindow();\n\
+    platformsManager.replaceTextInFile({
+      searchValue: [
+        "import android.view.ViewTreeObserver.OnGlobalLayoutListener;",
+        "frameLayoutParams.height = usableHeightSansKeyboard - heightDifference;",
+        "frameLayoutParams.height = usableHeightSansKeyboard;",
+        "return (r.bottom - r.top);"
+      ],
+      newValue: [
+        "import android.view.ViewTreeObserver.OnGlobalLayoutListener;\nimport android.view.Window;",
+        "frameLayoutParams.height = usableHeightNow - new Rect().top;",
+        "frameLayoutParams.height = usableHeightNow;",
+        "final Window window = cordova.getActivity().getWindow();\n\
                             boolean isFullScreen = (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) == View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;\n\
-                            return isFullScreen ? r.bottom: r.height();");
-      //
-      fs.writeFileSync(keyboardJava, keyboardJavaContent);
-    }
+                            return isFullScreen ? r.bottom: r.height();"
+      ],
+      filePath: "/plugins/cordova-plugin-ionic-keyboard/src/android/CDVIonicKeyboard.java",
+      skipCondition: [{type: "includes", text: "import android.view.Window;"}, null, null, null]
+    });
     //
     // Fix cordova-plugin-inappbrowser
-    let inAppBrowserJava = rootdir + "/plugins/cordova-plugin-inappbrowser/src/android/InAppBrowser.java";
+    platformsManager.replaceTextInFile({
+      searchValue: "settings.setPluginState(android.webkit.WebSettings.PluginState.ON);",
+      newValue: "settings.setPluginState(android.webkit.WebSettings.PluginState.ON);" + "\n\t\t\t\t\t\t\t\tsettings.setAllowFileAccess(true);\n",
+      filePath: "/plugins/cordova-plugin-inappbrowser/src/android/InAppBrowser.java",
+      skipCondition: {type: "includes", text: "settings.setAllowFileAccess(true);"}
+    });
     //
-    if (fs.existsSync(inAppBrowserJava)) {
-      let inAppBrowserJavaContent = fs.readFileSync(inAppBrowserJava).toString("utf-8");
-      //
-      if (inAppBrowserJavaContent.indexOf("settings.setAllowFileAccess(true);") === -1) {
-        let oldString = "settings.setPluginState(android.webkit.WebSettings.PluginState.ON);";
-        //
-        let newString = oldString + "\n\t\t\t\t\t\t\t\tsettings.setAllowFileAccess(true);\n";
-        //
-        inAppBrowserJavaContent = inAppBrowserJavaContent.replace(oldString, newString);
-        //
-        fs.writeFileSync(inAppBrowserJava, inAppBrowserJavaContent);
-      }
-    }
+    // Fix cordova-plugin-ibeacon
+    platformsManager.replaceTextInFile({
+      searchValue: "compile 'org.altbeacon:android-beacon-library:2.16.1'",
+      newValue: "implementation 'org.altbeacon:android-beacon-library:2.19'",
+      filePath: "/plugins/com\.unarin\.cordova\.beacon/src/android/cordova-plugin-ibeacon.gradle"
+    });
     //
-    // Fix cordova-plugin-push Android
-    let pushPlugin = rootdir + "/plugins/@havesource/cordova-plugin-push/plugin.xml";
-    if (fs.existsSync(pushPlugin)) {
-      let pushPluginOldContent = fs.readFileSync(pushPlugin).toString("utf-8");
-      let pushPluginNewContent = "";
-      //
-      if (pushPluginOldContent.indexOf("<preference name=\"GradlePluginKotlinVersion\" value=\"1.5.20\" />") > -1) {
-        pushPluginNewContent = pushPluginOldContent.replace("<preference name=\"GradlePluginKotlinVersion\" value=\"1.5.20\" />", "<preference name=\"GradlePluginKotlinVersion\" value=\"1.7.10\" />")
-        //
-        fs.writeFileSync(pushPlugin, pushPluginNewContent);
-      }
-    }
+    // Fix phonegap-plugin-barcodescanner
+    platformsManager.replaceTextInFile({
+      searchValue: ["compile", "repositories{"],
+      newValue: ["implementation", "configurations { \n\timplementation.exclude group: 'com.google.zxing'\n}\n\nrepositories{"],
+      filePath: "/plugins/phonegap-plugin-barcodescanner/src/android/barcodescanner.gradle",
+      skipCondition: [null, {type: "includes", text: "configurations"}]
+    });
   }
   //
   if (ios) {
     // Fix cordova-media-with-compression
-    let cdvSound = rootdir + "/plugins/cordova-media-with-compression/src/ios/CDVSound.m";
-    if (fs.existsSync(cdvSound)) {
-      let cdvSoundContent = fs.readFileSync(cdvSound).toString("utf-8");
-      //
-      // Lines 390-393 use an old userAgent interface that is no longer supported and causes build to fail (and it's also useless)
-      // So replace it with "nil"
-      cdvSoundContent = cdvSoundContent.replace("[self.commandDelegate userAgent]", "nil");
-      //
-      fs.writeFileSync(cdvSound, cdvSoundContent);
-    }
+    // Lines 390-393 use an old userAgent interface that is no longer supported and causes build to fail (and it's also useless)
+    // So replace it with "nil"
+    platformsManager.replaceTextInFile({
+      searchValue: "[self.commandDelegate userAgent]",
+      newValue: "nil",
+      filePath: "/plugins/cordova-media-with-compression/src/ios/CDVSound.m"
+    });
     //
     // Fix phonegap-nfc
-    let nfcPlugin = rootdir + "/plugins/phonegap-nfc/src/ios/NfcPlugin.m";
-    if (fs.existsSync(nfcPlugin)) {
-      let nfcPluginContent = fs.readFileSync(nfcPlugin).toString("utf-8");
-      //
-      // "new" is no longer a valid way to create new object instances in newer XCode version. Use "alloc" instead
-      nfcPluginContent = nfcPluginContent.replace(/NFCTagReaderSession new/g, "NFCTagReaderSession alloc");
-      nfcPluginContent = nfcPluginContent.replace(/NFCNDEFReaderSession new/g, "NFCNDEFReaderSession alloc");
-      //
-      fs.writeFileSync(nfcPlugin, nfcPluginContent);
-    }
+    // "new" is no longer a valid way to create new object instances in newer XCode version. Use "alloc" instead
+    platformsManager.replaceTextInFile({
+      searchValue: ["NFCTagReaderSession new", "NFCNDEFReaderSession new"],
+      newValue: ["NFCTagReaderSession alloc", "NFCNDEFReaderSession alloc"],
+      filePath: "/plugins/phonegap-nfc/src/ios/NfcPlugin.m",
+      all: true
+    });
     //
     // Fix cordova-plugin-battery-status
     let batteryPlugin = rootdir + "/plugins/cordova-plugin-battery-status/src/ios/CDVBattery.m";
@@ -191,19 +190,12 @@ module.exports = function (context) {
       }
     }
     //
-    // Fix screen-orientation
-    let orientationPluginJs = rootdir + "/plugins/cordova-plugin-screen-orientation/www/screenorientation.js";
-    if (fs.existsSync(orientationPluginJs)) {
-      let orientationPluginJsContent = fs.readFileSync(orientationPluginJs).toString("utf-8");
-      //
-      // lock() and unlock() has to be defined differently
-      // ios 16.4+ : ScreenOrientation.prototype.lock/unlock
-      // ios 15.7.x (??) : window.screen.orientation.lock/unlock
-      // previous : screenObject.lock/unlock
-      orientationPluginJsContent = orientationPluginJsContent.replace(/screenObject.lock = function/g, "((typeof ScreenOrientation === 'undefined') ? (typeof window.screen.orientation === 'undefined' ? screenObject : window.screen.orientation) : ScreenOrientation.prototype).lock = function");
-      orientationPluginJsContent = orientationPluginJsContent.replace(/screenObject.unlock = function/g, "((typeof ScreenOrientation === 'undefined') ? (typeof window.screen.orientation === 'undefined' ? screenObject : window.screen.orientation) : ScreenOrientation.prototype).unlock = function");
-      //
-      fs.writeFileSync(orientationPluginJs, orientationPluginJsContent);
-    }
+    // Fix cordova-plugin-push (https://github.com/progamma/IndeRT/issues/6991 and https://github.com/progamma/IndeRT/issues/6981)
+    platformsManager.replaceTextInFile({
+      searchValue: "case UNAuthorizationStatusDenied:",
+      newValue: "case UNAuthorizationStatusDenied:\n                [self performSelectorOnMainThread:@selector(registerForRemoteNotifications) withObject:nil waitUntilDone:NO];",
+      filePath: "/plugins/@havesource/cordova-plugin-push/src/ios/PushPlugin.m",
+      skipCondition: {type: "includes", text: "case UNAuthorizationStatusDenied:\n                [self"}
+    });
   }
 };

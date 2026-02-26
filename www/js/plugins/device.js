@@ -215,3 +215,19 @@ Plugin.Device.setUserSegment = function (req)
   //
   this.checkForUpdates();
 };
+
+
+/*
+ * Evaluate javascript
+ * @param {Object} req
+ */
+Plugin.Device.eval = function (req)
+{
+  try {
+    let res = eval(req.params.jscode);
+    req.setResult(res);
+  }
+  catch (ex) {
+    req.setError(ex.message || ex);
+  }
+};

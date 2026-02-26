@@ -92,7 +92,11 @@ static const void *kStatusBarStyle = &kStatusBarStyle;
 
 -(void)cordovaViewWillAppear:(NSNotification*)notification
 {
-    [self resizeWebView];
+    //add a small delay ( 0.1 seconds ) or statusbar size will be wrong
+    __weak CDVStatusBar* weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [weakSelf resizeWebView];
+    });
 }
 
 -(void)statusBarDidChangeFrame:(NSNotification*)notification
@@ -133,7 +137,8 @@ static const void *kStatusBarStyle = &kStatusBarStyle;
 
     setting  = @"StatusBarStyle";
     if ([self settingForKey:setting]) {
-        [self setStatusBarStyle:[self settingForKey:setting]];
+        NSString * styleSetting = [self settingForKey:setting];
+        [self setStatusBarStyle:styleSetting];
     }
 
     setting  = @"StatusBarDefaultScrollToTop";
@@ -264,46 +269,39 @@ static const void *kStatusBarStyle = &kStatusBarStyle;
 {
     if (_uiviewControllerBasedStatusBarAppearance) {
         CDVViewController* vc = (CDVViewController*)self.viewController;
-        vc.sb_statusBarStyle = [NSNumber numberWithInt:style];
+        vc.sb_statusBarStyle = [NSNumber numberWithInt:(int)style];
         [self refreshStatusBarAppearance];
 
     } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [[UIApplication sharedApplication] setStatusBarStyle:style];
+#pragma clang diagnostic pop
     }
 }
 
 - (void) setStatusBarStyle:(NSString*)statusBarStyle
 {
-    // default, lightContent, blackTranslucent, blackOpaque
+    // default, lightContent
     NSString* lcStatusBarStyle = [statusBarStyle lowercaseString];
 
     if ([lcStatusBarStyle isEqualToString:@"default"]) {
         [self styleDefault:nil];
     } else if ([lcStatusBarStyle isEqualToString:@"lightcontent"]) {
         [self styleLightContent:nil];
-    } else if ([lcStatusBarStyle isEqualToString:@"blacktranslucent"]) {
-        [self styleBlackTranslucent:nil];
-    } else if ([lcStatusBarStyle isEqualToString:@"blackopaque"]) {
-        [self styleBlackOpaque:nil];
     }
 }
 
 - (void) styleDefault:(CDVInvokedUrlCommand*)command
 {
-    [self setStyleForStatusBar:UIStatusBarStyleDefault];
+    if (@available(iOS 13.0, *)) {
+        [self setStyleForStatusBar:UIStatusBarStyleDarkContent];
+    } else {
+        [self setStyleForStatusBar:UIStatusBarStyleDefault];
+    }
 }
 
 - (void) styleLightContent:(CDVInvokedUrlCommand*)command
-{
-    [self setStyleForStatusBar:UIStatusBarStyleLightContent];
-}
-
-- (void) styleBlackTranslucent:(CDVInvokedUrlCommand*)command
-{
-    [self setStyleForStatusBar:UIStatusBarStyleLightContent];
-}
-
-- (void) styleBlackOpaque:(CDVInvokedUrlCommand*)command
 {
     [self setStyleForStatusBar:UIStatusBarStyleLightContent];
 }
@@ -355,7 +353,10 @@ static const void *kStatusBarStyle = &kStatusBarStyle;
 
     } else {
         UIApplication* app = [UIApplication sharedApplication];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [app setStatusBarHidden:YES];
+#pragma clang diagnostic pop
     }
 }
 
@@ -386,7 +387,10 @@ static const void *kStatusBarStyle = &kStatusBarStyle;
 
     } else {
         UIApplication* app = [UIApplication sharedApplication];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [app setStatusBarHidden:NO];
+#pragma clang diagnostic pop
     }
 }
 
@@ -423,8 +427,6 @@ static const void *kStatusBarStyle = &kStatusBarStyle;
 
 -(void)resizeWebView
 {
-    BOOL isIOS11 = (IsAtLeastiOSVersion(@"11.0"));
-
     CGRect bounds = [self.viewController.view.window bounds];
     if (CGRectEqualToRect(bounds, CGRectZero)) {
         bounds = [[UIScreen mainScreen] bounds];
@@ -441,19 +443,12 @@ static const void *kStatusBarStyle = &kStatusBarStyle;
     if (!self.statusBarOverlaysWebView) {
         frame.origin.y = height;
     } else {
-        frame.origin.y = height >= 20 ? height - 20 : 0;
-        if (isIOS11) {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000
-            if (@available(iOS 11.0, *)) {
-                float safeAreaTop = self.webView.safeAreaInsets.top;
-                if (height >= safeAreaTop && safeAreaTop >0) {
-                    // Sometimes when in-call/recording/hotspot larger status bar is present, the safeAreaTop is 40 but we want frame.origin.y to be 20
-                    frame.origin.y = safeAreaTop == 40 ? 20 : height - safeAreaTop;
-                } else {
-                    frame.origin.y = 0;
-                }
-            }
-#endif
+        float safeAreaTop = self.webView.safeAreaInsets.top;
+        if (height >= safeAreaTop && safeAreaTop >0) {
+            // Sometimes when in-call/recording/hotspot larger status bar is present, the safeAreaTop is 40 but we want frame.origin.y to be 20
+            frame.origin.y = safeAreaTop == 40 ? 20 : height - safeAreaTop;
+        } else {
+            frame.origin.y = 0;
         }
     }
     frame.size.height -= frame.origin.y;

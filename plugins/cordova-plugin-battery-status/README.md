@@ -21,11 +21,9 @@ description: Get events for device battery level.
 #         under the License.
 -->
 
-|AppVeyor|Travis CI|
-|:-:|:-:|
-|[![Build status](https://ci.appveyor.com/api/projects/status/github/apache/cordova-plugin-battery-status?branch=master)](https://ci.appveyor.com/project/ApacheSoftwareFoundation/cordova-plugin-battery-status)|[![Build Status](https://travis-ci.org/apache/cordova-plugin-battery-status.svg?branch=master)](https://travis-ci.org/apache/cordova-plugin-battery-status)|
-
 # cordova-plugin-battery-status
+
+[![Android Testsuite](https://github.com/apache/cordova-plugin-battery-status/actions/workflows/android.yml/badge.svg)](https://github.com/apache/cordova-plugin-battery-status/actions/workflows/android.yml) [![Chrome Testsuite](https://github.com/apache/cordova-plugin-battery-status/actions/workflows/chrome.yml/badge.svg)](https://github.com/apache/cordova-plugin-battery-status/actions/workflows/chrome.yml) [![iOS Testsuite](https://github.com/apache/cordova-plugin-battery-status/actions/workflows/ios.yml/badge.svg)](https://github.com/apache/cordova-plugin-battery-status/actions/workflows/ios.yml) [![Lint Test](https://github.com/apache/cordova-plugin-battery-status/actions/workflows/lint.yml/badge.svg)](https://github.com/apache/cordova-plugin-battery-status/actions/workflows/lint.yml)
 
 This plugin provides an implementation of an old version of the [Battery Status Events API][w3c_spec]. It adds the following three events to the `window` object:
 
@@ -62,7 +60,6 @@ Fires when the battery charge percentage changes by at least 1 percent, or when 
 
 - iOS
 - Android
-- Windows
 - Browser (Chrome, Firefox, Opera)
 
 ### Quirks: Android
@@ -85,7 +82,6 @@ Fires when the battery charge percentage reaches the low charge threshold. This 
 
 - iOS
 - Android
-- Windows
 - Browser (Chrome, Firefox, Opera)
 
 ## batterycritical event
@@ -104,7 +100,6 @@ Fires when the battery charge percentage reaches the critical charge threshold. 
 
 - iOS
 - Android
-- Windows
 - Browser (Chrome, Firefox, Opera)
 
 

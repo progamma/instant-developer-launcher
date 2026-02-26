@@ -1,0 +1,49 @@
+{
+  "name": "@totalpave/cordova-plugin-insets",
+  "version": "0.3.1",
+  "description": "Cordova Android Plugin to receive native information regarding the unsafe area insets.",
+  "main": "www/insets.js",
+  "types": "www/api.d.ts",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rollup -c rollup.config.js --bundleConfigAsCjs",
+    "version": "NODE_ENV=production npm run-script build",
+    "prepack": "ejs --output-file plugin.xml plugin.xml.ejs version=$npm_package_version",
+    "postversion": "git push && git push --tags",
+    "publish-dev": "npm publish --tag dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/totalpaveinc/cordova-plugin-insets.git"
+  },
+  "author": "norman.breau@totalpave.com",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/totalpaveinc/cordova-plugin-insets/issues"
+  },
+  "homepage": "https://github.com/totalpaveinc/cordova-plugin-insets#readme",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "25.0.7",
+    "@rollup/plugin-node-resolve": "15.2.3",
+    "@types/cordova": "11.0.3",
+    "ejs": "3.1.9",
+    "rollup": "4.9.2",
+    "rollup-plugin-progress": "1.1.2",
+    "rollup-plugin-typescript2": "0.36.0",
+    "ts-node": "10.9.2",
+    "typescript": "5.3.3"
+  },
+  "engines": {
+    "cordovaDependencies": {
+      "0.0.0": {
+        "cordova-android": ">= 11"
+      }
+    }
+  },
+  "dependencies": {
+    "tslib": "2.6.2"
+  }
+}

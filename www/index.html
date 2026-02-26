@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <title>Instant Developer Launcher</title>
 
-    <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: ws: wss: itms: itmss: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src * 'unsafe-inline' 'unsafe-eval'; media-src *" />
+    <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: ws: wss: itms: itmss: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src * 'unsafe-inline' 'unsafe-eval'; media-src *;" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
     <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width, height=device-height, viewport-fit=cover" />
@@ -25,7 +25,7 @@
   </head>
   <body onload="Shell.init()">
     <div class="wrapper hidden" id="wrapper">
-      <div class="container-main" id="container-main">
+      <div class="container-main main-page" id="container-main">
 
         <div class="toolbar-shell toolbar-back">
           <button id="btn-back" class="btn btn-labelicon icon-back btn-back">back</button>
@@ -40,7 +40,7 @@
             <button class="btn btn-icon icon-logout" id="icon-logout"></button>
           </div>
           <div class="toolbar-logo">
-            <img src="img/logo.png">
+            <img src="img/logo.png"></img>
           </div>
         </div>
 
@@ -53,24 +53,24 @@
             <div class="splash-main">
               <div class="splash-main-content">
                 <div class="splash-header">
-                  <img src="img/logo.png" class="splash-logo">
-                    <div class="splash-titles" id = "splash-title-main">
-                      <h1 id="title1">Instant Developer</h1>
-                      <h2 id="title2">Launcher</h2>
-                    </div>
-                    <div class="splash-titles hidden" id = "splash-title-connect">
-                      <h1 id="wait-msg" >Waiting for an app...</h1>
-                    </div>
+                  <img src="img/logo.png" class="splash-logo"></img>
+                  <div class="splash-titles" id = "splash-title-main">
+                    <h1 id="title1">Instant Developer</h1>
+                    <h2 id="title2">Launcher</h2>
+                  </div>
+                  <div class="splash-titles hidden" id = "splash-title-connect">
+                    <h1 id="wait-msg" >Waiting for an app...</h1>
+                  </div>
                 </div>
                 <div class="form-hidden form-login" id="form-login">
                   <div class="form-errors" id = "form-login-errors"></div>
                   <div class="formrow">
                     <label id="lbl-login-username" for="login-username">Username</label>
-                    <input type="text" id="login-username" autocapitalize="off">
+                    <input type="text" id="login-username" autocapitalize="off"></input>
                   </div>
                   <div class="formrow">
                     <label id="lbl-login-password" for="login-password">Password</label>
-                    <input type="password" id="login-password">
+                    <input type="password" id="login-password"></input>
                   </div>
                   <div class="formrow">
                     <label class="checkbox" for="login-keep"><input id="login-keep" type="checkbox" checked><span></span><p id="lbl-login-keep">Keep me logged in</p></label>

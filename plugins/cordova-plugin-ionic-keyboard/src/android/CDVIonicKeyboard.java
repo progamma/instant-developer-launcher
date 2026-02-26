@@ -15,6 +15,22 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.Window;
+import android.view.Window;
+import android.view.Window;
+import android.view.Window;
+import android.view.Window;
+import android.view.Window;
+import android.view.Window;
+import android.view.Window;
+import android.view.Window;
+import android.view.Window;
+import android.view.Window;
+import android.view.Window;
+import android.view.Window;
+import android.view.Window;
+import android.view.Window;
+import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 
 // import additionally required classes for calculating screen height
@@ -128,9 +144,9 @@ public class CDVIonicKeyboard extends CordovaPlugin {
                                 int usableHeightSansKeyboard = mChildOfContent.getRootView().getHeight();
                                 int heightDifference = usableHeightSansKeyboard - usableHeightNow;
                                 if (heightDifference > (usableHeightSansKeyboard/4)) {
-                                    frameLayoutParams.height = usableHeightSansKeyboard - heightDifference;
+                                    frameLayoutParams.height = usableHeightNow - new Rect().top;
                                 } else {
-                                    frameLayoutParams.height = usableHeightSansKeyboard;
+                                    frameLayoutParams.height = usableHeightNow;
                                 }
                                 mChildOfContent.requestLayout();
                                 usableHeightPrevious = usableHeightNow;
@@ -140,7 +156,9 @@ public class CDVIonicKeyboard extends CordovaPlugin {
                         private int computeUsableHeight() {
                             Rect r = new Rect();
                             mChildOfContent.getWindowVisibleDisplayFrame(r);
-                            return (r.bottom - r.top);
+                            final Window window = cordova.getActivity().getWindow();
+                            boolean isFullScreen = (window.getDecorView().getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) == View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+                            return isFullScreen ? r.bottom: r.height();
                         }
                     };
 

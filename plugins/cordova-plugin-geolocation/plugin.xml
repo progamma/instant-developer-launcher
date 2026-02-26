@@ -22,7 +22,7 @@
 xmlns:rim="http://www.blackberry.com/ns/widgets"
 xmlns:android="http://schemas.android.com/apk/res/android"
            id="cordova-plugin-geolocation"
-      version="4.1.0">
+      version="5.0.0">
 
     <name>Geolocation</name>
     <description>Cordova Geolocation Plugin</description>
@@ -92,32 +92,5 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         <source-file src="src/ios/CDVLocation.m" />
         <framework src="CoreLocation.framework" />
 
-    </platform>
-
-    <!-- windows universal apps (Windows 8.1, Windows Phone 8.1, Windows 8.0) -->
-    <platform name="windows">
-        <config-file target="package.appxmanifest" parent="/Package/Capabilities">
-            <DeviceCapability Name="location" />
-        </config-file>
-
-        <js-module src="src/windows/GeolocationProxy.js" name="GeolocationProxy">
-            <runs />
-        </js-module>
-
-        <js-module src="www/Coordinates.js" name="Coordinates">
-            <clobbers target="Coordinates" />
-        </js-module>
-
-        <js-module src="www/PositionError.js" name="PositionError">
-            <clobbers target="PositionError" />
-        </js-module>
-
-        <js-module src="www/Position.js" name="Position">
-            <clobbers target="Position" />
-        </js-module>
-
-        <js-module src="www/geolocation.js" name="geolocation">
-            <clobbers target="navigator.geolocation" />
-        </js-module>
     </platform>
 </plugin>

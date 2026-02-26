@@ -33,6 +33,8 @@ Plugin.Geolocation.getCurrentPosition = function (req)
 {
   var options = req.params.options || {};
   options.timeout = options.timeout || 5000;
+  options.maximumAge = options.maximumAge || 300000;
+  options.enableHighAccuracy = options.enableHighAccuracy ?? true;
   //
   navigator.geolocation.getCurrentPosition(function (position) {
     var c = {
@@ -59,6 +61,8 @@ Plugin.Geolocation.watchPosition = function (req)
 {
   var options = req.params.options || {};
   options.timeout = options.timeout || 5000;
+  options.maximumAge = options.maximumAge || 300000;
+  options.enableHighAccuracy = options.enableHighAccuracy ?? true;
   //
   // Clean, then set.
   this.clearWatch(req);

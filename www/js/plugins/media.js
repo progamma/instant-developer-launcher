@@ -20,7 +20,7 @@ Plugin.Media = {};
 Plugin.Media.init = function ()
 {
   this.mediaMap = {};
-  this.defaultDir = "cdvfile://localhost/persistent/";
+  this.defaultDir = Shell.isIOS() ? cordova.file.tempDirectory : cordova.file.dataDirectory;
 };
 
 
@@ -57,6 +57,9 @@ Plugin.Media.getMedia = function (req, cb)
   }
   else {
     var src = Plugin.Media.defaultDir + "fs/" + req.app.name + "/" + req.params.src;
+    if (Shell.isIOS())
+      src = src.replace("file://", "");
+    //
     var mObj = this.mediaMap[req.params.src];
     if (mObj)
       return mObj.media;

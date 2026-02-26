@@ -52,18 +52,15 @@
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <preference name="KeyboardResize" value="false" />
     <preference name="BackgroundColor" value="0x000000ff" />
-    <preference name="---StatusBarOverlaysWebView" value="true" />
-    <preference name="---FullScreen" value="true" />
-    <preference name="---StatusBarBackgroundColor" value="#00000000" />
-    <preference name="StatusBarOverlaysWebView" value="false" />
+    <preference name="StatusBarOverlaysWebView" value="true" />
+    <preference name="StatusBarBackgroundColor" value="#00000000" />
     <preference name="FullScreen" value="false" />
-    <preference name="StatusBarBackgroundColor" value="#3C3C3B" />
     <preference name="SplashScreen" value="screen" />
     <preference name="AutoHideSplashScreen" value="false" />
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <preference name="ShowSplashScreenSpinner" value="true" />
     <preference name="SplashMaintainAspectRatio" value="true" />
-    <preference name="FadeSplashScreen" value="true" />
+    <preference name="FadeSplashScreen" value="false" />
     <preference name="FadeSplashScreenDuration" value="500" />
     <preference name="Orientation" value="default" />
     <preference name="android-targetSdkVersion" value="33" />
@@ -74,24 +71,16 @@
     <preference name="AndroidXEnabled" value="true" />
     <preference name="UseSwiftLanguageVersion" value="5" />
     <platform name="android">
+        <preference name="scheme" value="http" />
+        <preference name="AndroidInsecureFileModeEnabled" value="true" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
         <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
         <icon density="hdpi" src="resources/android/icon/drawable-hdpi-icon.png" />
         <icon density="xhdpi" src="resources/android/icon/drawable-xhdpi-icon.png" />
         <icon density="xxhdpi" src="resources/android/icon/drawable-xxhdpi-icon.png" />
         <icon density="xxxhdpi" src="resources/android/icon/drawable-xxxhdpi-icon.png" />
-        <splash density="land-ldpi" src="resources/android/splash/drawable-land-ldpi-screen.png" />
-        <splash density="land-mdpi" src="resources/android/splash/drawable-land-mdpi-screen.png" />
-        <splash density="land-hdpi" src="resources/android/splash/drawable-land-hdpi-screen.png" />
-        <splash density="land-xhdpi" src="resources/android/splash/drawable-land-xhdpi-screen.png" />
-        <splash density="land-xxhdpi" src="resources/android/splash/drawable-land-xxhdpi-screen.png" />
-        <splash density="land-xxxhdpi" src="resources/android/splash/drawable-land-xxxhdpi-screen.png" />
-        <splash density="port-ldpi" src="resources/android/splash/drawable-port-ldpi-screen.png" />
-        <splash density="port-mdpi" src="resources/android/splash/drawable-port-mdpi-screen.png" />
-        <splash density="port-hdpi" src="resources/android/splash/drawable-port-hdpi-screen.png" />
-        <splash density="port-xhdpi" src="resources/android/splash/drawable-port-xhdpi-screen.png" />
-        <splash density="port-xxhdpi" src="resources/android/splash/drawable-port-xxhdpi-screen.png" />
-        <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
+        <preference name="AndroidWindowSplashScreenAnimatedIcon" value="resources/android/splash/splash-icon.xml" />
+        <preference name="AndroidWindowSplashScreenBackground" value="#3C3C3B" />
         <preference name="android-manifest/application/@android:usesCleartextTraffic" value="true" />
         <preference default="@mipmap/ic_launcher" name="ICON" />
         <preference default="@mipmap/ic_launcher" name="SMALL_ICON" />
@@ -148,17 +137,20 @@
         <config-file overwrite="true" parent="CFBundleDisplayName" platform="ios" target="*-Info.plist">
             <string>InstaLauncher</string>
         </config-file>
+        <config-file overwrite="true" parent="NSCalendarsUsageDescription" platform="ios" target="*-Info.plist">
+            <string>This app needs to access your calendars</string>
+        </config-file>
         <config-file overwrite="true" parent="NSBluetoothPeripheralUsageDescription" platform="ios" target="*-Info.plist">
-            <string>This app need to access bluetooth services</string>
+            <string>This app needs to access bluetooth services</string>
         </config-file>
         <config-file overwrite="true" parent="NSBluetoothAlwaysUsageDescription" platform="ios" target="*-Info.plist">
-            <string>This app need to always access bluetooth services</string>
+            <string>This app needs to always access bluetooth services</string>
         </config-file>
         <config-file overwrite="true" parent="NSPhotoLibraryUsageDescription" platform="ios" target="*-Info.plist">
-            <string>This app need to access your photo library</string>
+            <string>This app needs to access your photo library</string>
         </config-file>
         <config-file overwrite="true" parent="NSCameraUsageDescription" platform="ios" target="*-Info.plist">
-            <string>This app need to access your camera to scan QR Codes</string>
+            <string>This app needs to access your camera to scan QR Codes</string>
         </config-file>
         <config-file overwrite="true" parent="NSLocationAlwaysUsageDescription" platform="ios" target="*-Info.plist">
             <string>This app requires location services always</string>
@@ -206,6 +198,35 @@
         <config-file overwrite="true" parent="NSLocalNetworkUsageDescription" platform="ios" target="*-Info.plist">
             <string>This app requires access to the local network to check the connection and manage data synchronization</string>
         </config-file>
+        <privacy-manifest>
+            <key>NSPrivacyAccessedAPITypes</key>
+            <array>
+                <dict>
+                    <key>NSPrivacyAccessedAPIType</key>
+                    <string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+                    <key>NSPrivacyAccessedAPITypeReasons</key>
+                    <array>
+                        <string>0A2A.1</string>
+                    </array>
+                </dict>
+                <dict>
+                    <key>NSPrivacyAccessedAPIType</key>
+                    <string>NSPrivacyAccessedAPICategoryDiskSpace</string>
+                    <key>NSPrivacyAccessedAPITypeReasons</key>
+                    <array>
+                        <string>E174.1</string>
+                    </array>
+                </dict>
+                <dict>
+                    <key>NSPrivacyAccessedAPIType</key>
+                    <string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+                    <key>NSPrivacyAccessedAPITypeReasons</key>
+                    <array>
+                        <string>C56D.1</string>
+                    </array>
+                </dict>
+            </array>
+        </privacy-manifest>
     </platform>
     <plugin name="cordova-plugin-appavailability" spec="^0.4.2" />
     <plugin name="phonegap-nfc" spec="^1.2.0">
@@ -216,39 +237,39 @@
         <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value=" " />
     </plugin>
     <plugin name="cordova-plugin-add-swift-support" spec="^2.0.2" />
-    <plugin name="cordova-plugin-geolocation" spec="^4.1.0">
+    <plugin name="cordova-plugin-geolocation" spec="^5.0.0">
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="This app requires location services" />
     </plugin>
     <plugin name="cordova-plugin-dialogs" spec="^2.0.2" />
-    <plugin name="cordova-plugin-file-transfer" spec="^1.7.1" />
+    <plugin name="cordova-plugin-file-transfer" spec="^2.0.0" />
     <plugin name="phonegap-plugin-barcodescanner" spec="^8.1.0">
         <variable name="CAMERA_USAGE_DESCRIPTION" value="This app needs to access your camera" />
     </plugin>
     <plugin name="cordova-plugin-app-event" spec="^1.2.2" />
     <plugin name="cordova-plugin-vibration" spec="^3.1.1" />
+    <plugin name="cordova-plugin-screen-orientation" spec="^3.0.4" />
     <plugin name="cordova-plugin-network-information" spec="^3.0.0" />
     <plugin name="cordova-plugin-insomnia" spec="^4.3.0" />
     <plugin name="cordova-plugin-file" spec="^6.0.2" />
-    <plugin name="cordova-plugin-device-orientation" spec="^2.0.1" />
+    <plugin name="cordova-plugin-device-orientation" spec="^3.0.0" />
     <plugin name="cordova-plugin-device-name" spec="^1.3.5" />
     <plugin name="cordova-plugin-device-motion" spec="^2.0.1" />
-    <plugin name="cordova-plugin-device" spec="^2.0.3" />
-    <plugin name="cordova-plugin-battery-status" spec="^2.0.3" />
+    <plugin name="cordova-plugin-device" spec="^2.1.0" />
     <plugin name="com.unarin.cordova.beacon" spec="^3.8.1" />
-    <plugin name="cordova-plugin-camera" spec="^5.0.2">
+    <plugin name="cordova-plugin-camera" spec="^7.0.0">
         <variable name="CAMERA_USAGE_DESCRIPTION" value="This app needs to access your camera" />
         <variable name="PHOTOLIBRARY_USAGE_DESCRIPTION" value="This app needs to access your photo library" />
     </plugin>
-    <plugin name="cordova-plugin-statusbar" spec="^2.4.3" />
+    <plugin name="cordova-plugin-statusbar" spec="^4.0.0" />
     <plugin name="com.darktalker.cordova.screenshot" spec="git+https://github.com/gitawego/cordova-screenshot.git" />
-    <plugin name="cordova-plugin-splashscreen" spec="^6.0.0" />
     <plugin name="cordova-plugin-keychain-touch-id" spec="^3.2.1">
         <variable name="FACEID_USAGE_DESCRIPTION" value="For easy authentication" />
     </plugin>
     <plugin name="cordova.plugins.DozeOptimize" spec="https://github.com/thomas550i/cordova-plugin-doze-Optimize" />
-    <plugin name="cordova-plugin-inappbrowser" spec="^5.0.0" />
-    <plugin name="cordova-plugin-file-opener2" spec="^3.0.5" />
+    <plugin name="cordova-plugin-inappbrowser" spec="^6.0.0" />
+    <plugin name="cordova-plugin-file-opener2" spec="^4.0.0" />
     <plugin name="cordova-plugin-zip" spec="^3.1.0" />
     <plugin name="cordova-plugin-androidx-adapter" spec="^1.1.3" />
     <plugin name="cordova-open-native-settings" spec="^1.5.5" />
+    <plugin name="@totalpave/cordova-plugin-insets" spec="^0.3.1" />
 </widget>

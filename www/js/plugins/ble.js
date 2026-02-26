@@ -520,8 +520,27 @@ Plugin.Ble.isDiscovered = function (req)
  */
 Plugin.Ble.hasPermission = function (req)
 {
+  let permission = {};
   bluetoothle.hasPermission(function (result) {
-    req.setResult(result);
+    permission.location = result.hasPermission;
+    bluetoothle.hasPermissionBtScan(function (result) {
+      permission.scan = result.hasPermission;
+      bluetoothle.hasPermissionBtConnect(function (result) {
+        permission.connect = result.hasPermission;
+        bluetoothle.hasPermissionBtAdvertise(function (result) {
+          permission.advertise = result.hasPermission;
+          req.setResult(permission);
+        }, function (error) {
+          req.setError(error);
+        });
+      }, function (error) {
+        req.setError(error);
+      });
+    }, function (error) {
+      req.setError(error);
+    });
+  }, function (error) {
+    req.setError(error);
   });
 };
 
@@ -532,8 +551,25 @@ Plugin.Ble.hasPermission = function (req)
  */
 Plugin.Ble.requestPermission = function (req)
 {
+  let permission = {};
   bluetoothle.requestPermission(function (result) {
-    req.setResult(result);
+    permission.location = result.requestPermission;
+    bluetoothle.requestPermissionBtScan(function (result) {
+      permission.scan = result.requestPermission;
+      bluetoothle.requestPermissionBtConnect(function (result) {
+        permission.connect = result.requestPermission;
+        bluetoothle.requestPermissionBtAdvertise(function (result) {
+          permission.advertise = result.requestPermission;
+          req.setResult(permission);
+        }, function (error) {
+          req.setError(error);
+        });
+      }, function (error) {
+        req.setError(error);
+      });
+    }, function (error) {
+      req.setError(error);
+    });
   }, function (error) {
     req.setError(error);
   });

@@ -1,20 +1,24 @@
-var fs = require("fs");
-rootdir = process.cwd();
-android_dir = rootdir + "/platforms/android";
-project_properties_file = android_dir + "/project.properties";
+var platformsManager = require("../utils/platformsManager.js");
 //
-if (fs.existsSync(project_properties_file)) {
-  console.log("Handling project.properties");
-  let properties = fs.readFileSync(project_properties_file).toString("utf-8");
-  console.log("properties", properties, typeof properties);
-  properties = properties.replace(/com.android.support:support-v4\:\+/g, "com.android.support:support-v4:11.6.2");
-  properties = properties.replace(/com.android.support:support-v4\:24\+/g, "com.android.support:support-v4:11.6.2");
-  properties = properties.replace(/com.android.support:support-v4\:24.1.1\+/g, "com.android.support:support-v4:11.6.2");
-  properties = properties.replace(/com.android.support:support-v4\:26\+/g, "com.android.support:support-v4:11.6.2");
-  properties = properties.replace(/com.google.android.gms:play-services-location\:\+/g, "com.google.android.gms:play-services-location:11.6.2");
-  properties = properties.replace(/com.google.android.gms:play-services-location\:11\+/g, "com.google.android.gms:play-services-location:11.6.2");
-  fs.writeFileSync(project_properties_file, properties);
-}
-else {
-  console.log(project_properties_file + " not found. Skipping");
-}
+console.log("Handling project.properties");
+platformsManager.replaceTextInFile({
+  searchValue: [
+    "com.android.support:support-v4:+",
+    "com.android.support:support-v4:24+",
+    "com.android.support:support-v4:24.1.1+",
+    "com.android.support:support-v4:26+",
+    "com.google.android.gms:play-services-location:+",
+    "com.google.android.gms:play-services-location:11+"
+  ],
+  newValue: [
+    "com.android.support:support-v4:11.6.2",
+    "com.android.support:support-v4:11.6.2",
+    "com.android.support:support-v4:11.6.2",
+    "com.android.support:support-v4:11.6.2",
+    "com.google.android.gms:play-services-location:11.6.2",
+    "com.google.android.gms:play-services-location:11.6.2"
+  ],
+  filePath: "/project.properties",
+  platform: platformsManager.platforms.android,
+  all: true
+});

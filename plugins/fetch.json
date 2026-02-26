@@ -189,24 +189,6 @@
       "ANDROID_SUPPORT_V4_VERSION": "27.+"
     }
   },
-  "cordova-background-geolocation-plugin": {
-    "source": {
-      "type": "registry",
-      "id": "cordova-background-geolocation-plugin@2.0.10"
-    },
-    "is_top_level": true,
-    "variables": {
-      "GOOGLE_PLAY_SERVICES_VERSION": "17+",
-      "ALWAYS_USAGE_DESCRIPTION": "App requires background usage to access location",
-      "MOTION_USAGE_DESCRIPTION": "App requires motion detection",
-      "ICON": "@mipmap/ic_launcher",
-      "SMALL_ICON": "@mipmap/ic_launcher",
-      "ACCOUNT_NAME": "@string/app_name",
-      "ACCOUNT_LABEL": "@string/app_name",
-      "ACCOUNT_TYPE": "$PACKAGE_NAME.account",
-      "CONTENT_AUTHORITY": "$PACKAGE_NAME"
-    }
-  },
   "cordova-plugin-speechrecognition": {
     "source": {
       "type": "registry",

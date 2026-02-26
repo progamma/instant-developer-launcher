@@ -116,6 +116,30 @@ module.exports = function (context) {
       filePath: "/plugins/phonegap-plugin-barcodescanner/src/android/barcodescanner.gradle",
       skipCondition: [null, {type: "includes", text: "configurations"}]
     });
+    //
+    // Fix phonegap-nfc (Android Beam removed in API level 34: https://developer.android.com/sdk/api_diff/34/changes )
+    platformsManager.replaceTextInFile({
+      searchValue: [
+        "!nfcAdapter.isNdefPushEnabled()",
+        "nfcAdapter.setBeamPushUris",
+        "nfcAdapter.setNdefPushMessage",
+        "nfcAdapter.setOnNdefPushCompleteCallback"
+      ],
+      newValue: [
+        "/*!nfcAdapter.isNdefPushEnabled()*/false",
+        "//nfcAdapter.setBeamPushUris",
+        "//nfcAdapter.setNdefPushMessage",
+        "//nfcAdapter.setOnNdefPushCompleteCallback"
+      ],
+      filePath: "/plugins/phonegap-nfc/src/android/src/com/chariotsolutions/nfc/plugin/NfcPlugin.java",
+      skipCondition: [
+        {type: "includes", text: "/*!nfcAdapter.isNdefPushEnabled()*/false"},
+        {type: "includes", text: "//nfcAdapter.setBeamPushUris"},
+        {type: "includes", text: "//nfcAdapter.setNdefPushMessage"},
+        {type: "includes", text: "//nfcAdapter.setOnNdefPushCompleteCallback"}
+      ],
+      all: true
+    });
   }
   //
   if (ios) {

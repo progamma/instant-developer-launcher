@@ -1023,7 +1023,7 @@ Shell.ShellDriver.prototype.removeDirRecursive = function (directory, cb)
 
 
 /**
- * Makes a HTTP request to a web server
+ * Makes an HTTP request to a web server
  * @param {Object} url
  * @param {String} method
  * @param {Object} options
@@ -1037,14 +1037,14 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
     headers: {}
   }, options);
   //
-  // Make the header keys lowercase
+  // I make the header keys lowercase
   let headers = {};
   for (let key in options.headers)
     headers[key.toLowerCase()] = options.headers[key];
   options.headers = headers;
   //
   // Extract and encode params from  options
-  // * @param {Object} obj
+  // @param {Object} obj
   let parseParams = function (obj) {
     let str = [];
     for (let p in obj) {
@@ -1057,8 +1057,6 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
   let multiPart = false;
   let download = false;
   let upload = false;
-  //
-  // Checks case
   switch (method) {
     case "POST":
       multiPart = true;
@@ -1084,13 +1082,7 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
   if (options.authentication)
     options.headers.authorization = "Basic " + btoa(options.authentication.username + ":" + options.authentication.password);
   //
-  // Create the complete query string
-  let params = parseParams(options.params);
-  //
-  // Add it to the url (for GET method)
   let uri = url.url;
-  if (method !== "POST" && params)
-    uri += (uri.includes("?") ? "&" : "?") + params;
   //
   if (upload || download) {
     let filePath = cordova.file[options._file.type === "temp" ? "cacheDirectory" : "dataDirectory"];
@@ -1139,12 +1131,6 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
   if (options.timeOut)
     req.timeout = options.timeOut;
   //
-  // Initialize request
-  req.open(method, uri, true);
-  //
-  // To handle better response, want receive binary data
-  req.responseType = (download ? "arraybuffer" : options.responseType || "text");
-  //
   let data;
   //
   // Custom body case
@@ -1153,37 +1139,47 @@ Shell.ShellDriver.prototype.httpRequest = function (url, method, options, cb)
     //
     if (typeof options.bodyType === "string")
       options.headers["content-type"] = options.bodyType;
-    else if (!options.headers["content-type"])
-      options.headers["content-type"] = "application/octet-stream";
     //
     // Types allowed for the custom body are: string and ArrayBuffer, but you can pass an object to
     // get a JSON custom body
-    if (typeof options.body === "object") {
-      if (!(options.body instanceof ArrayBuffer)) {
-        try {
-          data = JSON.stringify(options.body);
-          options.headers["content-type"] = "application/json";
-        }
-        catch (e) {
-          return cb({error: new Error(`Cannot stringify custom body: ${e.message}`)});
-        }
+    if (options.body instanceof ArrayBuffer)
+      options.headers["content-type"] = options.headers["content-type"] || "application/octet-stream";
+    else if (typeof options.body === "object") {
+      try {
+        data = JSON.stringify(options.body);
+        options.headers["content-type"] = options.headers["content-type"] || "application/json";
+      }
+      catch (e) {
+        return cb({error: new Error(`Cannot stringify custom body: ${e.message}`)});
       }
     }
-    else if (typeof options.body !== "string")
+    else if (typeof options.body === "string")
+      options.headers["content-type"] = options.headers["content-type"] || "text/plain";
+    else
       return cb({error: new Error("Custom body must be String, Object or ArrayBuffer")});
   }
-  else if (multiPart) { // Multipart request
+  else if (multiPart) {
     // Create formdata object
     data = new FormData();
     //
     // Add params to formData object
-    let sepParams = params.split("&");
-    for (let i = 0; i < sepParams.length; i++) {
-      let [key, value] = sepParams[i].split("=");
-      if (key && value)
-        data.append(decodeURIComponent(key), decodeURIComponent(value));
-    }
+    for (let key in options.params)
+      data.append(key, options.params[key]);
+    options.params = {};
   }
+  else if (options.headers["content-type"] === "application/x-www-form-urlencoded") {
+    data = parseParams(options.params);
+    options.params = {};
+  }
+  //
+  if (Object.keys(options.params).length > 0)
+    uri += (uri.includes("?") ? "&" : "?") + parseParams(options.params);
+  //
+  // Initialize request
+  req.open(method, uri, true);
+  //
+  // To handle better response, want receive binary data
+  req.responseType = (download ? "arraybuffer" : options.responseType || "text");
   //
   // Add custom headers
   for (let header in options.headers)

@@ -147,6 +147,11 @@ module.exports = function (context) {
       newValue: "//.put(\"nonce\",                      jsonForNullable(request.nonce))",
       filePath: "/plugins/cordova-plugin-oidc-basic/src/android/OIDCBasic.java"
     });
+    platformsManager.replaceTextInFile({
+      searchValue: ["<framework src=\"net.openid:appauth:0.7+\"/>"],
+      newValue: ["<framework src=\"net.openid:appauth:0.8+\"/>"],
+      filePath: "/plugins/cordova-plugin-oidc-basic/plugin.xml"
+    });
   }
   //
   if (ios) {
@@ -231,8 +236,8 @@ module.exports = function (context) {
     //
     // Fix cordova-plugin-oidc-basic
     platformsManager.replaceTextInFile({
-      searchValue: ["<framework src=\"net.openid:appauth:0.7+\"/>", "<framework src=\"AppAuth\" type=\"podspec\" spec=\"~> 1.3.0\" />"],
-      newValue: ["<framework src=\"net.openid:appauth:0.8+\"/>", "<podspec>\n<config>\n<source url=\"https://cdn.cocoapods.org/\"/>\n</config>\n<pods use-frameworks=\"true\">\n<pod name=\"AppAuth\" spec=\"~> 1.3.0\" />\n</pods>\n</podspec>"],
+      searchValue: ["<framework src=\"AppAuth\" type=\"podspec\" spec=\"~> 1.3.0\" />", "spec=\"~> 1.3.0\"", "<pods use-frameworks=\"true\">"],
+      newValue: ["<podspec>\n<config>\n<source url=\"https://cdn.cocoapods.org/\"/>\n</config>\n<pods use-frameworks=\"true\">\n<pod name=\"AppAuth\" spec=\"~> 1.7.3\" />\n</pods>\n</podspec>", "spec=\"~> 1.7.3\"", "<pods use-frameworks=\"false\">"],
       filePath: "/plugins/cordova-plugin-oidc-basic/plugin.xml"
     });
   }

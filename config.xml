@@ -47,6 +47,7 @@
         <hook src="hooks/before_platform_add.js" type="before_platform_add" />
         <preference name="InterceptRemoteRequests" value="all" />
     </platform>
+    <preference name="InspectableWebview" value="true" />
     <preference name="DisallowOverscroll" value="true" />
     <preference name="BackupWebStorage" value="none" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />

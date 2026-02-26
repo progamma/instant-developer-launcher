@@ -57,7 +57,7 @@
     <preference name="---StatusBarBackgroundColor" value="#00000000" />
     <preference name="StatusBarOverlaysWebView" value="false" />
     <preference name="FullScreen" value="false" />
-    <preference name="StatusBarBackgroundColor" value="#39403A" />
+    <preference name="StatusBarBackgroundColor" value="#3C3C3B" />
     <preference name="SplashScreen" value="screen" />
     <preference name="AutoHideSplashScreen" value="false" />
     <preference name="SplashShowOnlyFirstTime" value="false" />
@@ -226,7 +226,6 @@
     </plugin>
     <plugin name="cordova-plugin-app-event" spec="^1.2.2" />
     <plugin name="cordova-plugin-vibration" spec="^3.1.1" />
-    <plugin name="cordova-plugin-screen-orientation" spec="^3.0.2" />
     <plugin name="cordova-plugin-network-information" spec="^3.0.0" />
     <plugin name="cordova-plugin-insomnia" spec="^4.3.0" />
     <plugin name="cordova-plugin-file" spec="^6.0.2" />

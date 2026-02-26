@@ -26,9 +26,9 @@ Shell.config = {
   "eacInstallCmd": "https://console.instantdevelopercloud.com/CCC?mode=rest&cmd=eacinstall",
   "theme": {
     "HideKeyboardFormAccessoryBar": true,
-    "StatusBarBackgroundColor": "#39403A",
-    "accentColor": "#37B349",
-    "activeColor": "#257831"
+    "StatusBarBackgroundColor": "#3C3C3B",
+    "accentColor": "#45A94B",
+    "activeColor": "#237131"
   },
   "plugins": {
     "SignInWithApple": {},

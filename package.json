@@ -19,7 +19,6 @@
       "cordova-plugin-statusbar": {},
       "cordova-plugin-device-motion": {},
       "cordova-plugin-wkwebview-file-xhr": {},
-      "cordova-plugin-screen-orientation": {},
       "cordova-plugin-file-opener2": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
       },
@@ -101,7 +100,6 @@
     "cordova-plugin-local-notification": "^0.9.0-beta.2",
     "cordova-plugin-network-information": "^3.0.0",
     "cordova-plugin-save-image": "^0.3.0",
-    "cordova-plugin-screen-orientation": "^3.0.2",
     "cordova-plugin-speechrecognition": "^1.2.0",
     "cordova-plugin-splashscreen": "^6.0.0",
     "cordova-plugin-statusbar": "^2.4.3",

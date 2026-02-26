@@ -190,5 +190,20 @@ module.exports = function (context) {
         fs.writeFileSync(pushPlugin, pushPluginNewContent);
       }
     }
+    //
+    // Fix screen-orientation
+    let orientationPluginJs = rootdir + "/plugins/cordova-plugin-screen-orientation/www/screenorientation.js";
+    if (fs.existsSync(orientationPluginJs)) {
+      let orientationPluginJsContent = fs.readFileSync(orientationPluginJs).toString("utf-8");
+      //
+      // lock() and unlock() has to be defined differently
+      // ios 16.4+ : ScreenOrientation.prototype.lock/unlock
+      // ios 15.7.x (??) : window.screen.orientation.lock/unlock
+      // previous : screenObject.lock/unlock
+      orientationPluginJsContent = orientationPluginJsContent.replace(/screenObject.lock = function/g, "((typeof ScreenOrientation === 'undefined') ? (typeof window.screen.orientation === 'undefined' ? screenObject : window.screen.orientation) : ScreenOrientation.prototype).lock = function");
+      orientationPluginJsContent = orientationPluginJsContent.replace(/screenObject.unlock = function/g, "((typeof ScreenOrientation === 'undefined') ? (typeof window.screen.orientation === 'undefined' ? screenObject : window.screen.orientation) : ScreenOrientation.prototype).unlock = function");
+      //
+      fs.writeFileSync(orientationPluginJs, orientationPluginJsContent);
+    }
   }
 };

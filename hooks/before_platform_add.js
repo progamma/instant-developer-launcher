@@ -234,6 +234,12 @@ module.exports = function (context) {
       skipCondition: {type: "includes", text: "case UNAuthorizationStatusDenied:\n                [self"}
     });
     //
+    platformsManager.replaceTextInFile({
+      searchValue: "default=\"~> 8.1.1\"",
+      newValue: "default=\"~> 10.24.0\"",
+      filePath: "/plugins/@havesource/cordova-plugin-push/plugin.xml"
+    });
+    //
     // Fix cordova-plugin-oidc-basic
     platformsManager.replaceTextInFile({
       searchValue: ["<framework src=\"AppAuth\" type=\"podspec\" spec=\"~> 1.3.0\" />", "spec=\"~> 1.3.0\"", "<pods use-frameworks=\"true\">"],
